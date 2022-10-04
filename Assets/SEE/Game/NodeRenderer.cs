@@ -533,6 +533,10 @@ namespace SEE.Game
         {
             // Add outline around nodes so they can be visually differentiated without needing the same color.
             Node node = gameNode.GetNode();
+            if (node.Type == "Developer" || node.Type == "Contribution")
+            {
+                return;
+            }
             VisualNodeAttributes attribs = Settings.NodeTypes[node.Type];
             Outline.Create(gameNode, Color.black, attribs.OutlineWidth);
             nodeTypeToAntennaDectorator[node.Type]?.AddAntenna(gameNode);
@@ -567,6 +571,107 @@ namespace SEE.Game
                     codeCity ??= SceneQueries.GetCodeCity(node.transform).gameObject;
                     Portal.SetPortal(codeCity, text);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Draw and place the contribution nodes.
+        /// </summary>
+        /// <param name="nodes">The list if contribution nodes.</param>
+        /// <param name="map">A map of all Nodes -> GameObjects in the city.</param>
+        private void PositionContributionNodes (List<Node> nodes, List<Node> fileNodes, Dictionary<Node, GameObject> map)
+        {
+            // Get a dictionary of all files with their ID.
+            Dictionary<string, GameObject> idgo = new Dictionary<string, GameObject> ();
+            foreach (var entry in fileNodes)
+            {
+                idgo[entry.ID] = map[entry];
+            }
+
+            NodeFactory sfFactory = nodeTypeToFactory["File"];
+
+            foreach (var nd in nodes)
+            {
+                GameObject gameNode = DrawNode (nd);
+                map[nd] = gameNode;
+
+                // Set metrics.
+                ContributionFactory fact = nodeTypeToFactory["Contribution"] as ContributionFactory;
+                string contFileId = nd.GetString("Contribution.FileId");
+                GameObject sfile_go = idgo[contFileId];
+                if (!sfile_go)
+                {
+                    throw new Exception("Could not find source file block: " + contFileId);
+                }
+                Node sfile_nd = sfile_go.GetComponent<NodeRef> ().Value;
+
+                int sf_lines = sfile_nd.GetInt("Metric.Lines.LOC");
+                int nd_lines = nd.GetInt("Metric.Lines.LOC");
+                float line_height = 1.0f / sf_lines;
+
+                Vector3 sfDim = new Vector3(
+                    1.125f,
+                    line_height * nd_lines,
+                    1.125f
+                );
+
+                Vector3 sfPos = new Vector3(
+                    0.0f,
+                    line_height * nd.GetInt("Metric.Lines.FirstLine") - 0.5f,
+                    0.0f
+                );
+
+                fact.SetBranchNumber (gameNode, nd.GetInt ("Info.Branch"));
+
+                gameNode.transform.parent = sfile_go.transform;
+                gameNode.transform.localPosition = sfPos;
+                gameNode.transform.localScale = sfDim;
+            }
+        }
+
+        /// <summary>
+        /// Draw and place the developer nodes.
+        /// </summary>
+        /// <param name="nodes">The list if contribution nodes.</param>
+        /// <param name="map">A map of all Nodes -> GameObjects in the city.</param>
+        private void PositionDeveloperNodes (List<Node> nodes, Dictionary<Node, GameObject> map)
+        {
+            NodeFactory cFac = nodeTypeToFactory["Contribution"];
+            DeveloperFactory dFac = nodeTypeToFactory["Developer"] as DeveloperFactory;
+
+            // Get the max height of the city
+            float maxHeight = 0.0f;
+            foreach (var entry in map)
+            {
+                NodeFactory factory = nodeTypeToFactory[entry.Key.Type];
+                float height = factory.Roof (entry.Value).y;
+                if (height > maxHeight)
+                {
+                    maxHeight = height;
+                }
+            }
+
+            foreach (var nd in nodes)
+            {
+                GameObject gameNode = DrawNode (nd);
+                map[nd] = gameNode;
+
+                Vector3 avgPos = new Vector3 (0, 0, 0);
+                int nn = 0;
+                foreach (var outg in nd.Outgoings)
+                {
+                    avgPos += cFac.GetCenterPosition (map[outg.Target]);
+                    nn++;
+                }
+                if (nn > 0)
+                {
+                    avgPos /= nn;
+                }
+
+                avgPos.y = maxHeight * 1.125f;
+
+                dFac.SetGroundPosition (gameNode, avgPos);
+                dFac.SetName (gameNode, nd.GetString ("Developer.Name"));
             }
         }
     }

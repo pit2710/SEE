@@ -91,7 +91,15 @@ namespace SEE.Game
         {
             foreach (string nodeType in AllNodeTypes())
             {
-                if (Settings.NodeTypes.TryGetValue(nodeType, out VisualNodeAttributes value))
+                if (nodeType == "Developer")
+                {
+                    nodeTypeToFactory[nodeType] = new DeveloperFactory ();
+                }
+                else if (nodeType == "Contribution")
+                {
+                    nodeTypeToFactory[nodeType] = new ContributionFactory ();
+                }
+                else if (Settings.NodeTypes.TryGetValue(nodeType, out VisualNodeAttributes value))
                 {
                     nodeTypeToFactory[nodeType] = GetNodeFactory(value);
                     nodeTypeToAntennaDectorator[nodeType] = GetAntennaDecorator(value);
@@ -268,12 +276,33 @@ namespace SEE.Game
         public void DrawGraph(Graph graph, GameObject parent)
         {
             // all nodes of the graph
-            List<Node> nodes = graph.Nodes();
-            if (nodes.Count == 0)
+            List<Node> graphNodes = graph.Nodes();
+            List<Node> nodes = new List<Node> ();
+            List<Node> devNodes = new List<Node> ();
+            List<Node> contNodes = new List<Node> ();
+            if (graphNodes.Count == 0)
             {
                 Debug.LogWarning("The graph has no nodes.\n");
                 return;
             }
+
+            // Developer and Contribution nodes need to be sorted out since they should not be layouted.
+            foreach (var nd in graphNodes)
+            {
+                if (nd.Type == "Developer")
+                {
+                    devNodes.Add (nd);
+                }
+                else if (nd.Type == "Contribution")
+                {
+                    contNodes.Add (nd);
+                }
+                else
+                {
+                    nodes.Add (nd);
+                }
+            }
+
             // FIXME: The two following calls DrawLeafNodes and DrawInnerNodes can be merged into one.
             Dictionary<Node, GameObject> nodeMap = DrawLeafNodes(nodes);
 
@@ -316,6 +345,10 @@ namespace SEE.Game
             // Decorations must be applied after the blocks have been placed, so that
             // we also know their positions.
             AddDecorations(nodeToGameObject);
+
+            // Draw and place contributions and developers.
+            PositionContributionNodes (contNodes, nodes, nodeMap);
+            PositionDeveloperNodes (devNodes, nodeMap);
 
             // Create the laid out edges; they will be children of the unique root game node
             // representing the node hierarchy. This way the edges can be moved along with
