@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cea3acc41ae7e1498ab5b898cf0043c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _image: {fileID: 2800000, guid: 7490381d81430c04290598c6dbe16d4a, type: 3}
+  _image: {fileID: 2800000, guid: 8ed4d974f56543d40ad4a73d619f41a9, type: 3}
   isDynamicMode: 1
   enableColorCorrection: 1
   _faceRect:
