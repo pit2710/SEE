@@ -20,184 +20,194 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/// <summary>
-/// This component has to be attached to a GameObject whose meshes need to have
-/// all of the BlendShapes provided by FACSHuman using the naming convention
-/// of the Facial Action Coding System (FACS). Using this component, the GameObject
-/// will be able to change its facial expressions based on a List of Action Units (AU)
-/// provided. Changes will be animated.
-/// </summary>
-public class FACS : MonoBehaviour
+namespace SEE.Game.Avatars
 {
     /// <summary>
-    /// Inner class for creating instances of FACS Action Units.
+    /// This component has to be attached to a GameObject whose meshes need to have
+    /// all of the BlendShapes provided by FACSHuman using the naming convention
+    /// of the Facial Action Coding System (FACS). Using this component, the GameObject
+    /// will be able to change its facial expressions based on a List of Action Units (AU)
+    /// provided. Changes will be animated.
     /// </summary>
-    public class ActionUnit
+    public class FACS : MonoBehaviour
     {
         /// <summary>
-        /// The provided string refers to the unique name of AU BlendShapes.
+        /// Inner class for creating instances of FACS Action Units.
         /// </summary>
-        public string AU;
-
-        /// <summary>
-        /// The provided integer value describes the intensity of a single AU. It must be a number between
-        /// 1-5 representing the expression strength A-E from the FACS.
-        /// </summary>
-        [Range(1, 5)]
-        public int Intensity;
-
-        /// <summary>
-        /// Constructor of ActionUnit-Class for creating instances.
-        /// </summary>
-        public ActionUnit (string aU, int intensity)
+        public class ActionUnit
         {
-            AU = aU;
-            Intensity = intensity;
-        }
-    }
+            /// <summary>
+            /// The provided string refers to the unique name of AU BlendShapes.
+            /// </summary>
+            public string AU;
 
-    /// <summary>
-    /// Component Array which will get filled with all SkinnedMeshRenderer of the child objects.
-    /// </summary>
-    private Component[] renderer;
+            /// <summary>
+            /// The provided integer value describes the intensity of a single AU.
+            /// It must be a number between 1-5 representing the expression
+            /// strength A-E from the FACS.
+            /// </summary>
+            [Range(1, 5)]
+            public int Intensity;
 
-    /// <summary>
-    /// List of ActionUnits which have to be set. This list is public, so that external scripts can provide the
-    /// desired ActionUnits.
-    /// </summary>
-    public List<FACS.ActionUnit> SelectedActions = new List<FACS.ActionUnit>();
-
-    /// <summary>
-    /// List of ActionUnits which already are present.
-    /// </summary>
-    private List<FACS.ActionUnit> ActualActions = new List<FACS.ActionUnit>();
-
-    /// <summary>
-    /// List of ActionUnits which aren't needed no more.
-    /// </summary>
-    private List<FACS.ActionUnit> NotNeededActions = new List<FACS.ActionUnit>();
-
-    /// <summary>
-    /// Float value for in- or decreasing BlendshapeWeights per Update()-execution.
-    /// </summary>
-    private float animationVelocity = 1.0f;
-
-    /// <summary>
-    /// This function is called once in the initializing phase. It retrieves the SkinnedMeshRenderer components from all
-    /// meshes of the GameObject.
-    /// </summary>
-    void Start()
-    {
-        // Get all SkinnedMeshRenderer components of childs-objects.
-        renderer = gameObject.GetComponentsInChildren(typeof(SkinnedMeshRenderer));
-    }
-
-    /// <summary>
-    /// This function is called once per frame. It checks, whether there are AUs present, which aren't needed no more.
-    /// The blendshapeweight of those will be decreased until it reaches 0. The blendshapeweight of selected AUs which
-    /// don't have the desired value yet, will be in- or decreased until it reaches the desired value.
-    /// </summary>
-    void Update()
-    {
-        // If an AU is present, but does not appear in the new selection of AUs it is not needed anymore.
-        // Therefore it gets added to the List<ActionUnit> named NotNeededActions.
-        foreach (var action in ActualActions)
-        {
-            if (!SelectedActions.Any(au => au.AU == action.AU))
+            /// <summary>
+            /// Constructor of ActionUnit-Class for creating instances.
+            /// </summary>
+            /// <param name="aU">name of the AU blend shapes</param>
+            /// <param name="intensity">intensity of the AU</param>
+            public ActionUnit(string aU, int intensity)
             {
-                NotNeededActions.Add(action);
+                AU = aU;
+                Intensity = intensity;
             }
         }
 
-        // Check if SkinnedMeshRendererComponents have been found.
-        if (renderer != null)
+        /// <summary>
+        /// Component array which will get filled with all SkinnedMeshRenderer
+        /// of the child objects.
+        /// </summary>
+        private Component[] skinnedMeshrenderer;
+
+        /// <summary>
+        /// List of ActionUnits which have to be set. This list is public, so that
+        /// external scripts can provide the desired ActionUnits.
+        /// </summary>
+        public IList<FACS.ActionUnit> SelectedActions = new List<FACS.ActionUnit>();
+
+        /// <summary>
+        /// List of ActionUnits which are already present.
+        /// </summary>
+        private IList<FACS.ActionUnit> actualActions = new List<FACS.ActionUnit>();
+
+        /// <summary>
+        /// List of ActionUnits which aren't needed no more.
+        /// </summary>
+        private readonly IList<FACS.ActionUnit> notNeededActions = new List<FACS.ActionUnit>();
+
+        /// <summary>
+        /// Float value for in- or decreasing BlendshapeWeights per Update() execution.
+        /// </summary>
+        private const float animationVelocity = 1.0f;
+
+        /// <summary>
+        /// This function is called once in the initializing phase. It retrieves the
+        /// SkinnedMeshRenderer components from all meshes of the GameObject.
+        /// </summary>
+        void Start()
         {
-            // The following code gets executed for every mesh of the GameObject, which own BlendShapes.
-            foreach (SkinnedMeshRenderer meshRenderer in renderer)
+            // Get all SkinnedMeshRenderer components of childs-objects.
+            skinnedMeshrenderer = gameObject.GetComponentsInChildren(typeof(SkinnedMeshRenderer));
+        }
+
+        /// <summary>
+        /// This function is called once per frame. It checks, whether there are AUs present
+        /// that aren't needed no more. The blendshapeweight of those will be decreased until
+        /// it reaches 0. The blendshapeweight of selected AUs which don't have the desired
+        /// value yet, will be in- or decreased until it reaches the desired value.
+        /// </summary>
+        void Update()
+        {
+            // If an AU is present, but does not appear in the new selection of AUs it is not
+            // needed anymore. Therefore it gets added to the List<ActionUnit>
+            // named notNeededActions.
+            foreach (ActionUnit action in actualActions)
             {
-                // The blendshapeweight of AUs which are present but not needed anymore will be decreased inside
-                // the following loop until it reaches 0. Afterwards they will be removed from the list.
-                foreach (var NotNeededAU in NotNeededActions.ToList())
+                if (!SelectedActions.Any(au => au.AU == action.AU))
                 {
-                    // If an AU was decreasing / occuring in NotNeededAUs, but is now selected again,
-                    // this AU doesn't need to be decreased anymore, wherefore it gets removed from the list
-                    // and the iteration will stop for this entry.
-                    if (SelectedActions.Any(au => au.AU == NotNeededAU.AU))
+                    notNeededActions.Add(action);
+                }
+            }
+
+            // Check whether SkinnedMeshRendererComponents have been found.
+            if (skinnedMeshrenderer != null)
+            {
+                // The following code gets executed for every mesh of the GameObject, which own BlendShapes.
+                foreach (SkinnedMeshRenderer meshRenderer in skinnedMeshrenderer)
+                {
+                    // The blendshapeweight of AUs which are present but not needed anymore will
+                    // be decreased inside the following loop until it reaches 0. Afterwards they
+                    // will be removed from the list.
+                    foreach (ActionUnit notNeededAU in notNeededActions.ToList())
                     {
-                        NotNeededActions.Remove(NotNeededAU);
-                        break;
-                    }
-
-                    // Get the BlendShapeIndex of a specific AU by the string provided.
-                    // GetBlendShapeIndex returns -1, if there was no BlendShape found.
-                    var blendShapeIndex = meshRenderer.sharedMesh.GetBlendShapeIndex(NotNeededAU.AU);
-
-                    // Check, whether a BlendShape with the provided name was found.
-                    if (blendShapeIndex != -1)
-                    {
-                        // Get the current BlendShapeWeight of this AU.
-                        var actualBlendshapeWeight = meshRenderer.GetBlendShapeWeight(blendShapeIndex);
-
-                        // If the BlendshapeWeight of the AU is still above 0, it gets decreased by the animationvelocity.
-                        // If it reaches 0, it will be removed from this list.
-                        if (actualBlendshapeWeight > 0.0f)
+                        // If an AU was decreasing / occuring in NotNeededAUs, but is now selected again,
+                        // this AU doesn't need to be decreased anymore, wherefore it gets removed from
+                        // the list and the iteration will stop for this entry.
+                        if (SelectedActions.Any(au => au.AU == notNeededAU.AU))
                         {
-                            meshRenderer.SetBlendShapeWeight(blendShapeIndex, actualBlendshapeWeight - animationVelocity);
+                            notNeededActions.Remove(notNeededAU);
+                            break;
+                        }
+
+                        // Get the BlendShapeIndex of a specific AU by the string provided.
+                        // GetBlendShapeIndex returns -1, if there was no BlendShape found.
+                        int blendShapeIndex = meshRenderer.sharedMesh.GetBlendShapeIndex(notNeededAU.AU);
+
+                        // Check, whether a BlendShape with the provided name was found.
+                        if (blendShapeIndex != -1)
+                        {
+                            // Get the current BlendShapeWeight of this AU.
+                            float actualBlendshapeWeight = meshRenderer.GetBlendShapeWeight(blendShapeIndex);
+
+                            // If the BlendshapeWeight of the AU is still above 0, it gets decreased by
+                            // the animationvelocity. If it reaches 0, it will be removed from this list.
+                            if (actualBlendshapeWeight > 0.0f)
+                            {
+                                meshRenderer.SetBlendShapeWeight(blendShapeIndex, actualBlendshapeWeight - animationVelocity);
+                            }
+                            else
+                            {
+                                notNeededActions.Remove(notNeededAU);
+                            }
                         }
                         else
                         {
-                            NotNeededActions.Remove(NotNeededAU);
+                            Debug.LogError($"Blendshape with name: {notNeededAU.AU} not found.\n");
                         }
                     }
-                    else
+
+                    // The following loop checks whether AUs which should be displayed have reached their
+                    // desired intensity. If this is not the case, the BlendShapeWeight of the AU will be
+                    // in- or decreased until it reaches that value.
+                    foreach (ActionUnit selectedAU in SelectedActions)
                     {
-                        Debug.Log("Blendshape with name: " + NotNeededAU.AU + " not found.\n");
+                        // Get the BlendShapeIndex of a specific AU by the string provided.
+                        // GetBlendShapeIndex returns -1, if there was no BlendShape found.
+                        int blendShapeIndex = meshRenderer.sharedMesh.GetBlendShapeIndex(selectedAU.AU);
+
+                        // Check, whether a BlendShape with the provided name was found.
+                        if (blendShapeIndex != -1)
+                        {
+                            // Get the current BlendShapeWeight of this AU.
+                            float actualBlendshapeWeight = meshRenderer.GetBlendShapeWeight(blendShapeIndex);
+
+                            // Convert the Integer which represents the degree of expression of the AU to a
+                            // percentual float value.
+                            int intensityFloat = 20 * selectedAU.Intensity;
+
+                            // If the Blendshapeweight of the AU is below the desired intensity, the blendshapeweight will be
+                            // increased. Otherwise it will be decreased.
+                            if (actualBlendshapeWeight < intensityFloat)
+                            {
+                                meshRenderer.SetBlendShapeWeight(blendShapeIndex, actualBlendshapeWeight + animationVelocity);
+                            }
+                            else if (actualBlendshapeWeight > intensityFloat)
+                            {
+                                meshRenderer.SetBlendShapeWeight(blendShapeIndex, actualBlendshapeWeight - animationVelocity);
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError($"Blendshape with name: {selectedAU.AU} not found.\n");
+                        }
                     }
-
-
                 }
 
-                // The following loop checks whether AUs which should be displayed have reached their
-                // desired intensity. If this is not the case, the BlendShapeWeight of the AU will be
-                // in- or decreased until it reaches that value.
-                foreach (var SelectedAU in SelectedActions)
-                {
-                    // Get the BlendShapeIndex of a specific AU by the string provided.
-                    // GetBlendShapeIndex returns -1, if there was no BlendShape found.
-                    var blendShapeIndex = meshRenderer.sharedMesh.GetBlendShapeIndex(SelectedAU.AU);
-
-                    // Check, whether a BlendShape with the provided name was found.
-                    if (blendShapeIndex != -1)
-                    {
-                        // Get the current BlendShapeWeight of this AU.
-                        var actualBlendshapeWeight = meshRenderer.GetBlendShapeWeight(blendShapeIndex);
-
-                        // Convert the Integer which represents the degree of expression of the AU to a
-                        // percentual float value.
-                        var intensityFloat = 20 * SelectedAU.Intensity;
-
-                        // If the Blendshapeweight of the AU is below the desired intensity, the blendshapeweight will be
-                        // increased. Otherwise it will be decreased.
-                        if (actualBlendshapeWeight < intensityFloat)
-                        {
-                            meshRenderer.SetBlendShapeWeight(blendShapeIndex, actualBlendshapeWeight + animationVelocity);
-                        }
-                        else if (actualBlendshapeWeight > intensityFloat)
-                        {
-                            meshRenderer.SetBlendShapeWeight(blendShapeIndex, actualBlendshapeWeight - animationVelocity);
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("Blendshape with name: " + SelectedAU.AU + " not found.\n");
-                    }
-                }
+                // Set the present AUs.
+                actualActions = SelectedActions;
             }
-
-            // Set the present AUs.
-            ActualActions = SelectedActions;
-        } else {
-            Debug.LogError("No SkinnedMeshRenderer components found.\n");
+            else
+            {
+                Debug.LogError("No SkinnedMeshRenderer components found.\n");
+            }
         }
     }
 }
