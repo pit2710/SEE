@@ -2,7 +2,6 @@ using SEE.GO;
 using SEE.Utils;
 using UnityEngine.Assertions;
 using UnityEngine;
-using System;
 
 namespace SEE.Game.UI
 {
@@ -43,38 +42,52 @@ namespace SEE.Game.UI
         {
             if (UserTogglesMenu())
             {
-                if (Raycasting.RaycastGraphElement(out RaycastHit hit, out GraphElementRef elementRef) == HitGraphElement.None)
+                Debug.Log($"User toggles menu. menuIsOn={menuIsOn}\n");
+                if (Raycasting.RaycastGraphElement(out RaycastHit hit, out GraphElementRef graphElementRef) == HitGraphElement.None)
                 {
+                    Debug.Log("Neither node or edge hit.\n");
                     // User does not hit a node or edge. Hence, the menu should be closed if it is currently open.
                     if (menuIsOn)
                     {
-                        menuIsOn = false;
-                        ShowMenu(null, false);
+                        HideMenu();
                     }
                 }
                 else
                 {
+                    Debug.Log($"Node or edge was hit.  menuIsOn={menuIsOn}\n");
                     // User has hit a node or edge. Hence, the menu should be opened in case it wasn't.
                     if (!menuIsOn)
                     {
-                        menuIsOn = true;
-                        ShowMenu(hit.collider.gameObject, true);
+                        ShowMenu(hit, graphElementRef);
                     }
                 }
             }
         }
 
-        private void ShowMenu(GameObject newlyHitGameObject, bool showMenu)
+        private void HideMenu()
         {
-            canvas?.gameObject.SetActive(showMenu);
+            canvas?.gameObject.SetActive(false);
+            menuIsOn = false;
+        }
 
+        private void ShowMenu(RaycastHit hit, GraphElementRef graphElementRef)
+        {
+            canvas?.gameObject.SetActive(true);
+            menuIsOn = true;
+            Assert.IsNotNull(hit.collider);
+            Assert.IsNotNull(graphElementRef);
+            GameObject newlyHitGameObject = hit.collider.gameObject;
+            Debug.Log($"ShowMenu({graphElementRef.elem.ToShortString()})\n");
+            canvas.gameObject.transform.position = hit.point;
             hitGameObject = newlyHitGameObject;
+
         }
 
         private static bool UserTogglesMenu()
         {
+            const int MidddleMouseButton = 2;
             // TODO: other interaction for VR needs to be added.
-            return Input.GetMouseButton(3);
+            return Input.GetMouseButtonDown(MidddleMouseButton);
         }
 
         /// <summary>
@@ -130,16 +143,19 @@ namespace SEE.Game.UI
         public void Option1()
         {
             Debug.Log("Option 1\n");
+            HideMenu();
         }
 
         public void Option2()
         {
             Debug.Log("Option 2\n");
+            HideMenu();
         }
 
         public void Option3()
         {
             Debug.Log("Option 3\n");
+            HideMenu();
         }
     }
 }
