@@ -1920,10 +1920,6 @@ GameObject:
   - component: {fileID: 477006648313590177}
   - component: {fileID: 8052984603385970265}
   - component: {fileID: 4519054584001765198}
-  - component: {fileID: 1029086263988819246}
-  - component: {fileID: 6204260853223997262}
-  - component: {fileID: 1454363146394613646}
-  - component: {fileID: 1611100652676670656}
   - component: {fileID: 4124511589746242969}
   - component: {fileID: 2325141177275099007}
   - component: {fileID: 5787447703001592466}
@@ -1969,7 +1965,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 5b23869245c01f74b81be3459d78db7f, type: 3}
   m_Controller: {fileID: 9100000, guid: 6e34972e6d04d5040b981261b3f580a8, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
@@ -2092,145 +2088,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HideVRControllers: 0
   ShowControllerHints: 0
---- !u!114 &1029086263988819246
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3176672528853839474}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee64685f2881fe9479b93b1d1583b4ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isDebug: 0
-  useLocalLipSync: 1
-  amplifyMultipleExperimental: 3.5
---- !u!114 &6204260853223997262
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3176672528853839474}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 2069102741, guid: 21fe281538940584e84b6d5eedb3525e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useMergeWithInfluencer: 0
-  ignoreScaledTime: 0
-  inspHeight: 150
-  inspShowHeads: 1
-  inspShowEmote: 1
-  inspShowEyes: 1
-  inspShowLids: 1
-  inspShowLipsync: 1
-  inspShowBlinks: 1
---- !u!114 &1454363146394613646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3176672528853839474}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1091098677, guid: 21fe281538940584e84b6d5eedb3525e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioSrc: {fileID: 0}
-  waitForAudioSource: 1
-  useExternalAnalysis: 0
-  audioSourceWaitTarget: {fileID: 0}
-  queueProcessor: {fileID: 6204260853223997262}
-  emoter: {fileID: 1611100652676670656}
-  emphasizerTrigger: 0.15
-  analysisValue: 0
-  sampleSize: 512
-  audioUpdateDelay: 0.0875
-  playheadBias: 2800
-  autoAdjustAnalysis: 1
-  autoAdjustMicrophone: 0
-  microphoneRecordHeadPointer: 0
-  scaleExternalAnalysis: 0
-  silencePulseThreshold: 3
-  loCutoff: 0.03
-  hiCutoff: 0.75
-  useAdvDyn: 1
-  advDynPrimaryBias: 0.5
-  useAdvDynJitter: 1
-  advDynJitterAmount: 0.1
-  advDynJitterProb: 0.25
-  useAdvDynSecondaryMix: 0
-  advDynSecondaryMix: 0
-  useAdvDynRollback: 0
-  advDynRollback: 0.3
-  globalFrac: 1
-  usePersistence: 0
-  useTimingsOverride: 0
-  globalDurON: 0.08
-  globalDurOFF: 0.06
-  globalDurOffBalance: 0
-  originalUpdateDelay: 0
-  globalNuanceBalance: 0
-  useEasingOverride: 0
-  globalEasing: 4
-  visemes: []
-  configReady: 0
-  configNotReadyNotified: 0
-  warnOnNullRefs: 1
-  isDebug: 0
-  useAudioAnalysis: 1
-  needAudioSource: 1
-  inspStateFoldoutProcessing: 0
-  inspStateFoldoutSettings: 0
-  inspStateFoldoutVisemes: 1
-  inspCollectionDisplayMode: 0
-  inspAnalysisDisplay: 0
-  inspOverrideSecondaryMix: 0
-  inspDetailedTimingAdjustments: 0
-  doEditorConfigPreview: 0
-  inspGoOriginalName: 
---- !u!114 &1611100652676670656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3176672528853839474}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1489447753, guid: 21fe281538940584e84b6d5eedb3525e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  emoterName: Emoter
-  queueProcessor: {fileID: 0}
-  lipsyncEmphasisChance: 1
-  lipsyncEmphasisEmotes: []
-  repeaterEmotes: []
-  randomEmotes: []
-  emotes: []
-  useRandomEmotes: 1
-  isChancePerEmote: 1
-  numRandomEmotesPerCycle: 0
-  numRandomEmphasizersPerCycle: 0
-  randomEmoteMinTimer: 1
-  randomEmoteMaxTimer: 2
-  randomChance: 0.5
-  useRandomFrac: 0
-  randomFracBias: 0.5
-  useRandomHoldDuration: 0
-  randomHoldDurationMin: 0.1
-  randomHoldDurationMax: 0.5
-  configReady: 0
-  warnOnNullRefs: 1
-  inspSalsaLinked: 0
-  inspStateFoldoutProcessing: 0
-  inspStateFoldoutSettings: 0
-  inspStateFoldoutEmotes: 0
-  inspCollectionDisplayMode: 0
 --- !u!114 &4124511589746242969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2311,7 +2168,7 @@ MonoBehaviour:
   fixTransforms: 1
   solver:
     executedInEditor: 0
-    IKPosition: {x: 1.9271512, y: 0.8016998, z: 3.6762571}
+    IKPosition: {x: 2.814924, y: -1.2045245, z: 0.065567136}
     IKPositionWeight: 1
     root: {fileID: 2836738320474797256}
     target: {fileID: 1561944432452817241}
@@ -2321,7 +2178,7 @@ MonoBehaviour:
     XY: 0
     bones:
     - transform: {fileID: 6388056852766479138}
-      weight: 0.125
+      weight: 0.452
       solverPosition: {x: 0, y: 0, z: 0}
       solverRotation: {x: 0, y: 0, z: 0, w: 0}
       defaultLocalPosition: {x: -7.218448e-14, y: 0.0014753146, z: -5.9282346e-10}
@@ -2331,7 +2188,7 @@ MonoBehaviour:
       sqrMag: 0
       axis: {x: 0, y: 0, z: 0}
     - transform: {fileID: 9069928863580343714}
-      weight: 0.287
+      weight: 0.542
       solverPosition: {x: 0, y: 0, z: 0}
       solverRotation: {x: 0, y: 0, z: 0, w: 0}
       defaultLocalPosition: {x: -1.1918022e-13, y: 0.0011994758, z: -3.6313524e-10}
@@ -2340,7 +2197,7 @@ MonoBehaviour:
       sqrMag: 0
       axis: {x: 0, y: 0, z: 0}
     - transform: {fileID: 2518570027154167085}
-      weight: 0.464
+      weight: 0.685
       solverPosition: {x: 0, y: 0, z: 0}
       solverRotation: {x: 0, y: 0, z: 0, w: 0}
       defaultLocalPosition: {x: -4.697022e-13, y: 0.001179776, z: 1.21654e-10}
@@ -2350,7 +2207,7 @@ MonoBehaviour:
       sqrMag: 0
       axis: {x: 0, y: 0, z: 0}
     - transform: {fileID: 5042251795226042111}
-      weight: 0.632
+      weight: 0.799
       solverPosition: {x: 0, y: 0, z: 0}
       solverRotation: {x: 0, y: 0, z: 0, w: 0}
       defaultLocalPosition: {x: 0.00030227733, y: 0.0015737338, z: 0.00026348417}
@@ -2359,7 +2216,7 @@ MonoBehaviour:
       sqrMag: 0
       axis: {x: 0, y: 0, z: 0}
     - transform: {fileID: 6633386193185240027}
-      weight: 0.852
+      weight: 0.916
       solverPosition: {x: 0, y: 0, z: 0}
       solverRotation: {x: 0, y: 0, z: 0, w: 0}
       defaultLocalPosition: {x: -1.8859282e-10, y: 0.0010271511, z: -3.5390257e-10}
@@ -2379,7 +2236,7 @@ MonoBehaviour:
     transform: {fileID: 3889872653513501995}
     axis: {x: 0, y: 0, z: 1}
     poleAxis: {x: 0, y: 1, z: 0}
-    polePosition: {x: 4.199957, y: 2.5718365, z: 0.56161857}
+    polePosition: {x: 2.816727, y: 3.031928, z: 0.29462126}
     poleWeight: 0
     poleTarget: {fileID: 0}
     clampWeight: 0.5
