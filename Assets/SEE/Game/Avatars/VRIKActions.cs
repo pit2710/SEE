@@ -212,24 +212,19 @@ namespace SEE.Game.Avatars
         /// <param name="animatorForVrik">The to be replaced Animator</param>
         public static void ReplaceAnimator(GameObject gameObject, string animatorForVrik)
         {
-            if (gameObject.TryGetComponentOrLog(out DynamicCharacterAvatar avatar))
-            {
-                RuntimeAnimatorController animationController =
+            RuntimeAnimatorController animationController =
                     Resources.Load<RuntimeAnimatorController>(animatorForVrik);
-                if (animationController != null)
+            if (animationController != null)
+            {
+                if (gameObject.TryGetComponentOrLog(out Animator animator))
                 {
-                    avatar.raceAnimationControllers.defaultAnimationController = animationController;
-
-                    if (gameObject.TryGetComponentOrLog(out Animator animator))
-                    {
-                        animator.runtimeAnimatorController = animationController;
-                        Debug.Log($"Loaded animation controller {animator.name} is human: {animator.isHuman}\n");
-                    }
+                    animator.runtimeAnimatorController = animationController;
+                    Debug.Log($"Loaded animation controller {animator.name} is human: {animator.isHuman}\n");
                 }
-                else
-                {
-                    Debug.LogError($"Could not load the animation controller at '{animatorForVrik}.'\n");
-                }
+            }
+            else
+            {
+                Debug.LogError($"Could not load the animation controller at '{animatorForVrik}.'\n");
             }
         }
     }
