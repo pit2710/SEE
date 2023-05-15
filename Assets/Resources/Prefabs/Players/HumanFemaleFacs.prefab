@@ -5879,6 +5879,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6413123521110283191}
   - component: {fileID: 1557673120344732191}
+  - component: {fileID: 3473122719338161166}
   m_Layer: 0
   m_Name: asianF_body
   m_TagString: Untagged
@@ -6100,6 +6101,19 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.0000010295771, y: -0.00035516277, z: -0.0072443318}
     m_Extent: {x: 0.0070262626, y: 0.0027358024, z: 0.008215075}
   m_DirtyAABB: 0
+--- !u!114 &3473122719338161166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7846157876202240453}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7d87424845d4b12aa08fc08698aa391, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LipShapeTables: []
 --- !u!1 &7852387043924893187
 GameObject:
   m_ObjectHideFlags: 0

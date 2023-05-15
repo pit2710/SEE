@@ -405,10 +405,18 @@ namespace SEE.Game.Avatars
             void AddComponentsForFacialTracker()
             {
                 Debug.Log("[HTC Facial Tracker] SR_Runtime found. Adding components...\n");
-                gameObject.AddComponent<AvatarBlendshapeExpressions>();
+                foreach (Transform child in gameObject.transform)
+                {
+                    if (child.gameObject.TryGetComponent(out AvatarSRanipalLipV2 avatarSRanipalLipV2))
+                    {
+                        avatarSRanipalLipV2.enabled = true;
+                        break;
+                    }
+                }
+                //gameObject.AddComponent<AvatarBlendshapeExpressions>();
 
                 // Multiplayer functionality for UMAExpressionplayer and Facialtracker.
-                gameObject.AddComponent<ExpressionPlayerSynchronizer>();
+                //gameObject.AddComponent<ExpressionPlayerSynchronizer>();
                 Debug.Log("[HTC Facial Tracker] Initialisation complete.\n");
             }
         }
