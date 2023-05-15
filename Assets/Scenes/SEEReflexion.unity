@@ -20144,7 +20144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerSpawns:
-  - PlayerPrefab: {fileID: 3176672528853839474, guid: e6621ed0aaf57f94781db64e8a00e2d4,
+  - PlayerPrefab: {fileID: 8104658945638256557, guid: e6621ed0aaf57f94781db64e8a00e2d4,
       type: 3}
     Position: {x: -28.9, y: 0.017, z: 9.4}
     Rotation: 0
