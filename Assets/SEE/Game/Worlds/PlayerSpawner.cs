@@ -113,6 +113,9 @@ namespace SEE.Game.Worlds
             {
                 Debug.LogError($"Spawned player {player.name} does not have a {typeof(NetworkObject)} component.\n");
             }
+            ZeroMQFACSvatar zmqf = UnityMainThreadDispatcher.Instance().gameObject.GetComponent<ZeroMQFACSvatar>();
+            zmqf.FACSModel0 = player.GetComponentInChildren<FACSnimator>();
+            zmqf.RiggedModel0 = player.GetComponentInChildren<HeadRotatorBone>();
         }
 
         /// <summary>
