@@ -3456,6 +3456,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2070895437497473992}
   - component: {fileID: 2887058025627255037}
+  - component: {fileID: 5878800302371443228}
+  - component: {fileID: 8493642138755320279}
   m_Layer: 0
   m_Name: asianM_body
   m_TagString: Untagged
@@ -3654,6 +3656,31 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.0000011527445, y: -0.00066933304, z: -0.007430338}
     m_Extent: {x: 0.0072233565, y: 0.003217719, z: 0.008404858}
   m_DirtyAABB: 0
+--- !u!114 &5878800302371443228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4907059518782334304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1baff5d3dbe38494ab39e74a00972710, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8493642138755320279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4907059518782334304}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7d87424845d4b12aa08fc08698aa391, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LipShapeTables: []
 --- !u!1 &4936344238533557927
 GameObject:
   m_ObjectHideFlags: 0
@@ -4574,6 +4601,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1947116508587184850}
+  - component: {fileID: 7594219034644180376}
   m_Layer: 0
   m_Name: asianM_armature
   m_TagString: Untagged
@@ -4597,6 +4625,22 @@ Transform:
   - {fileID: 4866319295020358908}
   m_Father: {fileID: 8006157185874496999}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7594219034644180376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6045612806044208488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30ab04940eec0c14985cb224f8d903cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jointObj_head: {fileID: 6532604336719751995}
+  jointObj_neck: {fileID: 7716790118718948402}
+  headRotCorrection: 0
+  neckRotCorrection: 0
 --- !u!1 &6089145586653878189
 GameObject:
   m_ObjectHideFlags: 0

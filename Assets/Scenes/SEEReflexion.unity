@@ -258,8 +258,40 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 184210, guid: 8a749df5e56f6422ba9fe64d83915a89,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 24380108}
   m_SourcePrefab: {fileID: 100100000, guid: 8a749df5e56f6422ba9fe64d83915a89, type: 3}
+--- !u!1 &24380107 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 184210, guid: 8a749df5e56f6422ba9fe64d83915a89,
+    type: 3}
+  m_PrefabInstance: {fileID: 24380106}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &24380108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 24380107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec98db2bfd206014aa81790061a50bfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sub_to_ip: 127.0.0.1
+  sub_to_port: 5572
+  facsvatar_logging: 0
+  participants: 0
+  FACSModel0: {fileID: 0}
+  RiggedModel0: {fileID: 0}
+  FACSModel1: {fileID: 0}
+  RiggedModel1: {fileID: 0}
+  FACSModelDnn: {fileID: 0}
+  RiggedModelDnn: {fileID: 0}
 --- !u!1 &35895293
 GameObject:
   m_ObjectHideFlags: 0
