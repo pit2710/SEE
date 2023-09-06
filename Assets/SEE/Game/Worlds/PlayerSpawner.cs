@@ -131,9 +131,12 @@ namespace SEE.Game.Worlds
                 faceCam.transform.parent = player.transform;
             }
 #endif
+            // TODO: re-enable @marcel
+            /*
             ZeroMQFACSvatar zmqf = UnityMainThreadDispatcher.Instance().gameObject.GetComponent<ZeroMQFACSvatar>();
             zmqf.FACSModel0 = player.GetComponentInChildren<FACSnimator>();
             zmqf.RiggedModel0 = player.GetComponentInChildren<HeadRotatorBone>();
+            */
         }
 
         /// <summary>
