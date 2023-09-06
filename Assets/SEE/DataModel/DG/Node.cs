@@ -316,6 +316,11 @@ namespace SEE.DataModel.DG
         }
 
         /// <summary>
+        /// All edges connected to this node, i.e., the union of its incoming and outgoing edges.
+        /// </summary>
+        public ISet<Edge> Edges => Incomings.Union(Outgoings).ToHashSet();
+
+        /// <summary>
         /// Resets this node, i.e., removes all incoming and outgoing edges
         /// and children from this node. Resets its graph and parent to null.
         ///
@@ -596,7 +601,7 @@ namespace SEE.DataModel.DG
         /// type and attributes. The hierarchy information (parent, level,
         /// and children) are not copied. Instead the copy will become a
         /// node without parent and children at level 0. If we copied the
-        /// hierarchy information, the hierarchy were no longer a forrest.
+        /// hierarchy information, the hierarchy were no longer a forest.
         /// </summary>
         /// <param name="clone">the clone receiving the copied attributes</param>
         protected override void HandleCloned(object clone)
