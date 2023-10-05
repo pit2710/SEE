@@ -8,6 +8,7 @@ using UnityEngine.Assertions;
 using SEE.Audio;
 using SEE.Game.SceneManipulation;
 using SEE.Utils.History;
+using Unity.Netcode;
 
 namespace SEE.Controls.Actions
 {
@@ -17,6 +18,17 @@ namespace SEE.Controls.Actions
     /// </summary>
     internal class DeleteAction : AbstractPlayerAction
     {
+        // RPC usage checklist:
+        //
+        // To use RPCs, make sure
+        //
+        // - [ClientRpc] or[ServerRpc] attributes are on your method.
+        // - Your method name ends with ClientRpc or ServerRpc (e.g., DoSomethingServerRpc()).
+        // - Your method is declared in a class that inherits from NetworkBehaviour.
+        // - Your GameObject has a NetworkObject component attached.
+        // - Make sure to call your RPC method server side or client side(using isClient or isServer).
+        // - Only accept value types as parameters.
+
         /// <summary>
         /// Returns a new instance of <see cref="DeleteAction"/>.
         /// </summary>
@@ -124,7 +136,7 @@ namespace SEE.Controls.Actions
                 Assert.IsTrue(hitGraphElement.HasNodeRef() || hitGraphElement.HasEdgeRef());
                 InteractableObject.UnselectAll(true);
                 (_, deletedGameObjects) = GameElementDeleter.Delete(hitGraphElement);
-                new DeleteNetAction(hitGraphElement.name).Execute();
+                DeleteNetAction();
                 CurrentState = IReversibleAction.Progress.Completed;
                 AudioManagerImpl.EnqueueSoundEffect(IAudioManager.SoundEffect.DropSound);
                 return true; // the selected objects are deleted and this action is done now
@@ -142,7 +154,7 @@ namespace SEE.Controls.Actions
         {
             base.Undo();
             GameElementDeleter.Revive(deletedGameObjects);
-            new ReviveNetAction((from go in deletedGameObjects select go.name).ToList()).Execute();
+            ReviveNetAction();
         }
 
         /// <summary>
@@ -152,7 +164,7 @@ namespace SEE.Controls.Actions
         {
             base.Redo();
             GameElementDeleter.Delete(hitGraphElement);
-            new DeleteNetAction(hitGraphElement.name).Execute();
+            DeleteNetAction();
         }
 
         /// <summary>
@@ -169,6 +181,29 @@ namespace SEE.Controls.Actions
             {
                 return new HashSet<string>(deletedGameObjects.Select(x => x.name));
             }
+        }
+
+        private void DeleteNetAction()
+        {
+            // NetworkManager.Singleton.LocalClient
+            new DeleteNetAction(hitGraphElement.name).Execute();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void DeleteServerRpc(string id)
+        {
+
+        }
+
+        [ClientRpc]
+        private void DeleteClientRpc(string id)
+        {
+
+        }
+
+        private void ReviveNetAction()
+        {
+            new ReviveNetAction((from go in deletedGameObjects select go.name).ToList()).Execute();
         }
     }
 }
