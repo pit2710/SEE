@@ -591,8 +591,7 @@ namespace SEE.UI.RuntimeConfigMenu
                 case LabelAttributes:
                     if (value.GetType() != typeof(VisualAttributes)
                         && value.GetType() != typeof(ConfigIO.IPersistentConfigItem)
-                        && value.GetType() != typeof(LabelAttributes)
-                       )
+                        && value.GetType() != typeof(LabelAttributes))
                     {
                         Debug.LogWarning("Missing: (Maybe)" + settingName + " " +
                                          value.GetType().GetNiceName() + "\n");

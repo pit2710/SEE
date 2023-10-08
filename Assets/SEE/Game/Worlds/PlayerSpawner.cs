@@ -105,32 +105,37 @@ namespace SEE.Game.Worlds
                                             Quaternion.Euler(new Vector3(0, playerSpawns[index].Rotation, 0)));
             numberOfSpawnedPlayers++;
             player.name = "Player " + numberOfSpawnedPlayers;
+#if DEBUG
             Debug.Log($"Spawned {player.name} (network id of owner: {owner}, local: {IsLocal(owner)}) at position {player.transform.position}.\n");
+#endif
             if (player.TryGetComponent(out NetworkObject net))
             {
                 // By default a newly spawned network Prefab instance is owned by the server
                 // unless otherwise specified.
                 net.SpawnAsPlayerObject(owner, destroyWithScene: true);
-
+#if DEBUG
                 Debug.Log($"Is local player: {net.IsLocalPlayer}. Owner of player {player.name} is server: {net.IsOwnedByServer} or is local client: {net.IsOwner}\n");
-                // A network Prefab is any unity Prefab asset that has one NetworkObject
-                // component attached to a GameObject within the prefab.
-                // player is a network Prefab, i.e., it has a NetworkObject attached to it.
-                // More commonly, the NetworkObject component is attached to the root GameObject
-                // of the Prefab asset because this allows any child GameObject to have
-                // NetworkBehaviour components automatically assigned to the NetworkObject.
-                // The reason for this is that a NetworkObject component attached to a
-                // GameObject will be assigned (associated with) any NetworkBehaviour components on:
-                //
-                // (1) the same GameObject that the NetworkObject component is attached to
-                // (2) any child or children of the GameObject that the NetworkObject is attached to.
-                //
-                // A caveat of the above two rules is when one of the children GameObjects also
-                // has a NetworkObject component assigned to it (a.k.a. "Nested NetworkObjects").
-                // Nested NetworkObject components aren't permited in network prefabs.
+#endif
 
-                //GameObject faceCam = PrefabInstantiator.InstantiatePrefab("Prefabs/FaceCam/FaceCam", parent: player.transform);
-#if false // FIXME
+// A network Prefab is any unity Prefab asset that has one NetworkObject
+// component attached to a GameObject within the prefab.
+// player is a network Prefab, i.e., it has a NetworkObject attached to it.
+// More commonly, the NetworkObject component is attached to the root GameObject
+// of the Prefab asset because this allows any child GameObject to have
+// NetworkBehaviour components automatically assigned to the NetworkObject.
+// The reason for this is that a NetworkObject component attached to a
+// GameObject will be assigned (associated with) any NetworkBehaviour components on:
+//
+// (1) the same GameObject that the NetworkObject component is attached to
+// (2) any child or children of the GameObject that the NetworkObject is attached to.
+//
+// A caveat of the above two rules is when one of the children GameObjects also
+// has a NetworkObject component assigned to it (a.k.a. "Nested NetworkObjects").
+// Nested NetworkObject components aren't permited in network prefabs.
+
+//GameObject faceCam = PrefabInstantiator.InstantiatePrefab("Prefabs/FaceCam/FaceCam", parent: player.transform);
+#if false // FIXME: The FaceCam is already added in the prefab of the player. No need to add it by the code below.
+
 
 #if !PLATFORM_LUMIN || UNITY_EDITOR
                 if (networkManager.IsServer)
