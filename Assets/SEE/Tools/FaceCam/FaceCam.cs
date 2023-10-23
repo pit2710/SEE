@@ -259,6 +259,13 @@ namespace SEE.Tools.FaceCam
 
         /// <summary>
         /// Initializes <see cref="webCamTextureToMatHelper"/> if not already set.
+        /// Sets <see cref="meshRenderer"/>.
+        ///
+        /// If this game object does not have a <see cref="WebCamTextureToMatHelper"/> component
+        /// attached, this behaviour is disabled.
+        ///
+        /// If this game object does not have a <see cref="MeshRenderer"/> component
+        /// attached, the game object is set inactive.
         /// </summary>
         private void Initialize()
         {
@@ -411,7 +418,7 @@ namespace SEE.Tools.FaceCam
 
         /// <summary>
         /// Once per frame, the local video is displayed.
-        /// Switches the FaceCam on and off, if the 'I' key is pressed.
+        /// Switches the FaceCam on and off, if requested by the user.
         /// It also checks whether the video should be sent to the clients in this frame - based
         /// on the specified network FPS - and transmits it.
         /// </summary>
@@ -712,10 +719,12 @@ namespace SEE.Tools.FaceCam
         {
             if (faceCamOn)
             {
+                Debug.Log("FaceCam is playing.\n");
                 webCamTextureToMatHelper.Play();
             }
             else
             {
+                Debug.Log("FaceCam is stopped.\n");
                 webCamTextureToMatHelper.Stop();
             }
             // Hide the FaceCam if it's deactivated.
@@ -758,7 +767,8 @@ namespace SEE.Tools.FaceCam
         private void GetFaceCamStatusServerRpc(ServerRpcParams serverRpcParams = default)
         {
 #if DEBUG
-            Debug.Log($"[RPC] Server received GetFaceCamStatusServerRpc from {serverRpcParams.Receive.SenderClientId}\n");
+            Debug.Log($"[RPC] Server received GetFaceCamStatusServerRpc from {serverRpcParams.Receive.SenderClientId}.\n");
+            Debug.Log($"[RPC] Server sends SetFaceCamStatusClientRpc(faceCamOn: {faceCamOn}, faceCamOnFront: {faceCamOnFront}) to all clients.\n");
 #endif
             SetFaceCamStatusClientRpc(faceCamOn, faceCamOnFront);
         }
@@ -791,9 +801,10 @@ namespace SEE.Tools.FaceCam
             // videoframe is null if the file size is too big.
             if (videoFrame == null)
             {
+                Debug.LogWarning("Video frame is too big. Not being sent.\n");
                 return;
             }
-            // Send the frame to the to server, unless this is the server.
+            // Send the frame to the server, unless this is the server.
             if (!IsServer)
             {
                 GetVideoFromClientAndSendItToClientsToRenderItServerRPC(videoFrame);
@@ -808,7 +819,7 @@ namespace SEE.Tools.FaceCam
 
         /// <summary>
         /// This creates a frame from the video source.
-        /// The frame can be send over the network and is compressed.
+        /// The frame can be sent over the network and is compressed.
         /// </summary>
         private byte[] CreateNetworkFrameFromVideo()
         {
