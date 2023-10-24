@@ -119,7 +119,7 @@ namespace SEE.Tools.FaceCam
             // all network objects.
 
             // Add own ClientId to list of Clients, to which the video should be broadcasted.
-            AddClientIdToListServerRPC(NetworkManager.Singleton.LocalClientId);
+            AddClientIdToListServerRPC();
             // Always invoke the base.
             base.OnNetworkSpawn();
         }
@@ -251,19 +251,6 @@ namespace SEE.Tools.FaceCam
             // Cache the material of the FaceCam to change its texture later. (Display a default
             // picture or the face of the user).
             mainMaterial = meshRenderer.material;
-
-            if (NetworkManager.LocalClient == null)
-            {
-                Debug.LogError("[FaceCam.Start] No local client.\n");
-            }
-            else if (NetworkManager.LocalClient.PlayerObject == null)
-            {
-                Debug.LogError("[FaceCam.Start] No player object for local client.\n");
-            }
-            else
-            {
-                Debug.Log($"[FaceCam.Start] Owner of player {NetworkManager.LocalClient.PlayerObject.name} is server: {NetworkManager.LocalClient.PlayerObject.IsOwnedByServer} or is local client: {NetworkManager.LocalClient.PlayerObject.IsOwner}\n");
-            }
         }
 
         /// <summary>
@@ -597,7 +584,7 @@ namespace SEE.Tools.FaceCam
             // Remove own ClientId from the list of connected ClientIds
             if (!IsServer && !IsOwner) // Owner and server is not in the list.
             {
-                RemoveClientFromListServerRPC(NetworkManager.Singleton.LocalClientId);
+                RemoveClientFromListServerRPC();
             }
 
             // Code from the WebCamTextureToMatHelperExample.

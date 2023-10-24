@@ -19,12 +19,12 @@ namespace SEE.Tools.FaceCam
         /// The clients call this to add their ClientId to the list on the Server.
         /// </summary>
         [ServerRpc(RequireOwnership = false)]
-        private void AddClientIdToListServerRPC(ulong clientId, ServerRpcParams serverRpcParams = default)
+        private void AddClientIdToListServerRPC(ServerRpcParams serverRpcParams = default)
         {
 #if DEBUG
-            Debug.Log($"[RPC] Server received AddClientIdToListServerRPC from {serverRpcParams.Receive.SenderClientId} with clientId={clientId}\n");
+            Debug.Log($"[RPC] Server received AddClientIdToListServerRPC from {serverRpcParams.Receive.SenderClientId}\n");
 #endif
-            clientsIdsList.Add(clientId);
+            clientsIdsList.Add(serverRpcParams.Receive.SenderClientId);
             // Create the RpcParams from the list to make the list usable as RpcParams.
             CreateClientRpcParams();
         }
@@ -33,12 +33,12 @@ namespace SEE.Tools.FaceCam
         /// The clients call this to remove their ClientId from the list on the Server.
         /// </summary>
         [ServerRpc(RequireOwnership = false)]
-        private void RemoveClientFromListServerRPC(ulong clientId, ServerRpcParams serverRpcParams = default)
+        private void RemoveClientFromListServerRPC(ServerRpcParams serverRpcParams = default)
         {
 #if DEBUG
-            Debug.Log($"[RPC] Server received RemoveClientFromListServerRPC from {serverRpcParams.Receive.SenderClientId} with clientId={clientId}\n");
+            Debug.Log($"[RPC] Server received RemoveClientFromListServerRPC from {serverRpcParams.Receive.SenderClientId}\n");
 #endif
-            clientsIdsList.Remove(clientId);
+            clientsIdsList.Remove(serverRpcParams.Receive.SenderClientId);
             // Create the RpcParams to make this list usable.
             CreateClientRpcParams();
         }
