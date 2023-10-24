@@ -550,7 +550,7 @@ namespace SEE.Tools.FaceCam
         /// <summary>
         /// Texture2D of the cropped webcam frame, containing the face.
         /// </summary>
-        public Texture2D face;
+        private Texture2D face;
 
         /// <summary>
         /// Renders <paramref name="faceTexture"/>, more precisely, sets <see cref="face"/>
@@ -567,6 +567,7 @@ namespace SEE.Tools.FaceCam
         {
             if (!IsOwner)
             {
+                Debug.Log($"Face: width={face.width} height={face.height}\n");
                 if (faceTexture == null || faceTexture.Length == 0)
                 {
                     Debug.LogError("Received empty face texture.\n");
