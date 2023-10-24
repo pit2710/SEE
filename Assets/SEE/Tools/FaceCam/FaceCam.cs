@@ -28,26 +28,12 @@ namespace SEE.Tools.FaceCam
 
         /// <summary>
         /// All Network Ids, but not the owner (where the video is recorded) or the server.
-        /// </summary>
-        private readonly List<ulong> clientsIdsList = new();
-
-        /// <summary>
-        /// All Network Ids, but not the owner (where the video is recorded) or the server.
         /// This attribute is assigned in <see cref="CreateClientRpcParams()"/>, but never
         /// read.
         /// TODO: Is it really needed? Maybe the assigned value is kept in this field
         /// such that it will not be cleaned up by the garbage collector.
         /// </summary>
         private ClientRpcParams clientsIdsRpcParams;
-
-        /// <summary>
-        /// Network id of this client. After instantiated locally, each NetworkObject is assigned a
-        /// NetworkObjectId that's used to associate NetworkObjects across the network. For example,
-        /// one peer can say "Send this RPC to the object with the NetworkObjectId 103," and everyone
-        /// knows what object it's referring to. A NetworkObject is spawned on a client is when it's
-        /// instantiated and assigned a unique NetworkObjectId.
-        /// </summary>
-        private ulong ownClientId;
 
         /// <summary>
         /// This seems to be the maximum size for files in bytes to be sent over the network.
@@ -128,18 +114,19 @@ namespace SEE.Tools.FaceCam
             // all network objects.
 
             // Add own ClientId to list of Clients, to which the video should be broadcasted.
-            ownClientId = NetworkManager.Singleton.LocalClientId;
-            if (!IsServer && !IsOwner)
-            {
-                AddClientIdToListServerRPC(ownClientId);
-            }
-
+            AddClientIdToListServerRPC(NetworkManager.Singleton.LocalClientId);
             // Always invoke the base.
             base.OnNetworkSpawn();
         }
 
+        /// <summary>
+        /// The web camera where the face of the local player is extracted from.
+        /// </summary>
         private WebCam webCam;
 
+        /// <summary>
+        /// Creates <see cref="webCam"/>.
+        /// </summary>
         private void Awake()
         {
             webCam = new();
@@ -377,261 +364,13 @@ namespace SEE.Tools.FaceCam
             }
         }
 
+        #region Server
+
         /// <summary>
-        /// Tell the server to toggle the FaceCam on/off for all clients.
+        /// The network ids of all clients including the local one's.
+        /// This list is maintained only on the server.
         /// </summary>
-        /// <remarks>
-        /// This call will be sent to the server. The default [ServerRpc] attribute
-        /// setting allows only a client owner (client that owns the NetworkObject associated
-        /// with the NetworkBehaviour containing the ServerRpc method) invocation rights.
-        /// Any client that isn't the owner won't be allowed to invoke the ServerRpc.
-        /// By setting the ServerRpc attribute's RequireOwnership parameter to false,
-        /// any client has ServerRpc invocation rights.
-        /// </remarks>
-        [ServerRpc(RequireOwnership = false)]
-        private void FaceCamOnOffServerRpc(bool networkFaceCamOn, ServerRpcParams serverRpcParams = default)
-        {
-            // A ServerRpc is a remote procedure call (RPC) that can be only invoked
-            // by a client and will always be received and executed on the server/host.
-#if DEBUG
-            Debug.Log($"[RPC] Server received FaceCamOnOffServerRpc from {serverRpcParams.Receive.SenderClientId} with networkFaceCamOn={networkFaceCamOn}\n");
-#endif
-            FaceCamOnOffClientRpc(networkFaceCamOn);
-        }
-
-        /// <summary>
-        /// Toggle the FaceCam on/off for all clients.
-        /// (Can only be used by the server).
-        /// </summary>
-        /// <remarks>This call is sent from the server to all its clients.</remarks>
-        [ClientRpc]
-        private void FaceCamOnOffClientRpc(bool networkFaceCamOn)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received FaceCamOnOffClientRpc from server with networkFaceCamOn={networkFaceCamOn}\n");
-#endif
-
-            // Note: The host is both a client and a server. If a host invokes a client RPC,
-            // it triggers the call on all clients, including the host.
-            //
-            // When running as a host, Netcode for GameObjects invokes RPCs immediately within the
-            // same stack as the method invoking the RPC. Since a host is both considered a server
-            // and a client, you should avoid design patterns where a ClientRpc invokes a ServerRpc
-            // that invokes the same ClientRpc as this can end up in a stack overflow (infinite
-            // recursion).
-
-            // NetworkFaceCamOn, resp. FaceCamOn has the value which should be inverted.
-            if (faceCamOn == networkFaceCamOn)
-            {
-                faceCamOn = !faceCamOn;
-                FaceCamOnOffToggle();
-            }
-        }
-
-        /// <summary>
-        /// Toggle the FaceCam on off state.
-        /// </summary>
-        private void FaceCamOnOffToggle()
-        {
-            if (faceCamOn)
-            {
-                Debug.Log("FaceCam is playing.\n");
-                webCam.webCamTextureToMatHelper.Play();
-            }
-            else
-            {
-                Debug.Log("FaceCam is stopped.\n");
-                webCam.webCamTextureToMatHelper.Stop();
-            }
-            // Hide the FaceCam if it's deactivated.
-            meshRenderer.enabled = faceCamOn;
-        }
-
-        /// <summary>
-        /// Tell the server to toggle the FaceCam position of all clients.
-        /// </summary>
-        [ServerRpc(RequireOwnership = false)]
-        private void FaceCamOnFrontToggleServerRpc(bool networkFaceCamOnFront, ServerRpcParams serverRpcParams = default)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Server received FaceCamOnFrontToggleServerRpc from {serverRpcParams.Receive.SenderClientId} with networkFaceCamOn={networkFaceCamOnFront}\n");
-#endif
-            FaceCamOnFrontToggleClientRpc(networkFaceCamOnFront);
-        }
-
-        /// <summary>
-        /// Toggle the FaceCam position of all clients.
-        /// (Can only be used by the server).
-        /// </summary
-        [ClientRpc]
-        private void FaceCamOnFrontToggleClientRpc(bool networkFaceCamOnFront)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received FaceCamOnFrontToggleClientRpc from server with networkFaceCamOnFront={networkFaceCamOnFront}\n");
-#endif
-
-            if (faceCamOnFront == networkFaceCamOnFront)
-            {
-                faceCamOnFront = !faceCamOnFront;
-            }
-        }
-
-        /// <summary>
-        /// Get the FaceCam status from the server to all clients.
-        /// </summary
-        [ServerRpc(RequireOwnership = false)]
-        private void GetFaceCamStatusServerRpc(ServerRpcParams serverRpcParams = default)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Server received GetFaceCamStatusServerRpc from {serverRpcParams.Receive.SenderClientId}.\n");
-            Debug.Log($"[RPC] Server sends SetFaceCamStatusClientRpc(faceCamOn: {faceCamOn}, faceCamOnFront: {faceCamOnFront}) to all clients.\n");
-#endif
-            SetFaceCamStatusClientRpc(faceCamOn, faceCamOnFront);
-        }
-
-        /// <summary>
-        /// Set the FaceCam status on all clients.
-        /// (Can only be used by the server).
-        /// </summary
-        [ClientRpc]
-        private void SetFaceCamStatusClientRpc(bool faceCamOn, bool faceCamOnFront)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received SetFaceCamStatusClientRpc from server with faceCamOn={faceCamOn} and faceCamOnFront={faceCamOnFront}\n");
-#endif
-            this.faceCamOn = faceCamOn;
-            this.faceCamOnFront = faceCamOnFront;
-            // Make the FaceCam visible/invisible and/or start/stop it.
-            FaceCamOnOffToggle();
-        }
-
-        /// <summary>
-        /// Displays the video on any client, but not where the video is recorded.
-        /// </summary>
-        private void DisplayVideoOnAllOtherClients()
-        {
-            // A frame of the video, created from the source video already displayed on
-            // this owners client.
-            byte[] videoFrame = CreateNetworkFrameFromVideo();
-
-            // videoframe is null if the file size is too big.
-            if (videoFrame == null)
-            {
-                Debug.LogWarning("Video frame is too big. Not being sent.\n");
-                return;
-            }
-            // Send the frame to the server, unless this is the server.
-            if (!IsServer)
-            {
-                GetVideoFromClientAndSendItToClientsToRenderItServerRPC(videoFrame);
-            }
-            else // If this is the owner (creator of video) and also the server.
-            {
-                // Send the frame to all clients. (But not the server and owner, which in
-                // this case, is the server.)
-                SendVideoToClientsToRenderItClientRPC(videoFrame);
-            }
-        }
-
-        /// <summary>
-        /// This creates a frame from the video source.
-        /// The frame can be sent over the network and is compressed.
-        /// </summary>
-        private byte[] CreateNetworkFrameFromVideo()
-        {
-            // Converts the texture to an byte array containing an JPG.
-            byte[] networkTexture = face.EncodeToJPG();
-            // Only return the array if it's not too big.
-            if (networkTexture != null && networkTexture.Length <= maximumNetworkByteSize)
-            {
-                return networkTexture;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// The owner calls this, to send his video to the server which sends it to all clients.
-        /// Also the server and every client will render this video onto the FaceCam.
-        /// </summary>
-        //[ServerRpc(Delivery = RpcDelivery.Unreliable)]
-        // Large files not supported by unreliable Rpc. (No documentation found regarding this limitation).
-        [ServerRpc]
-        private void GetVideoFromClientAndSendItToClientsToRenderItServerRPC(byte[] videoFrame, ServerRpcParams serverRpcParams = default)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Server received GetVideoFromClientAndSendItToClientsToRenderItServerRPC from {serverRpcParams.Receive.SenderClientId}\n");
-#endif
-
-            // The server will render this video onto his instance of the FaceCam.
-            RenderNetworkFrameOnFaceCam(videoFrame, mainMaterial);
-
-            // The server will send the video to all other clients (not the owner and server)
-            // so they can render it.
-            SendVideoToClientsToRenderItClientRPC(videoFrame);
-        }
-
-        /// <summary>
-        /// Texture2D of the cropped webcam frame, containing the face.
-        /// </summary>
-        public Texture2D face;
-
-        /// <summary>
-        /// The received frame will be rendered onto the FaceCam
-        /// </summary>
-        public void RenderNetworkFrameOnFaceCam(byte[] videoFrame, Material mainMaterial)
-        {
-            face.LoadImage(videoFrame);
-            mainMaterial.mainTexture = face;
-        }
-
-        /// <summary>
-        /// The Server calls this, to send his video to all clients.
-        /// Also every client will render this video onto the FaceCam.
-        /// </summary>
-        //[ClientRpc(Delivery = RpcDelivery.Unreliable)]
-        // Large files not supported by unreliable Rpc. (No documentation found regarding this limitation).
-        [ClientRpc]
-        private void SendVideoToClientsToRenderItClientRPC(byte[] videoFrame)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received SendVideoToClientsToRenderItClientRPC from server\n");
-#endif
-            RenderNetworkFrameOnFaceCam(videoFrame, mainMaterial);
-        }
-
-        /// <summary>
-        /// If the FaceCam should be destroyed (player disconnects), clean everything up.
-        /// </summary>
-        public override void OnDestroy()
-        {
-            // Remove own ClientId from the list of connected ClientIds
-            if (!IsServer && !IsOwner) // Owner and server is not in the list.
-            {
-                RemoveClientFromListServerRPC(ownClientId);
-            }
-
-            // Code from the WebCamTextureToMatHelperExample.
-            if (webCam.webCamTextureToMatHelper != null)
-            {
-                webCam.webCamTextureToMatHelper.Dispose();
-            }
-
-            // Code from the WebCamTextureToMatHelperExample.
-            webCam.faceLandmarkDetector?.Dispose();
-
-            // Code from the WebCamTextureToMatHelperExample.
-#if UNITY_WEBGL
-            if (getFilePath_Coroutine != null)
-            {
-                StopCoroutine(getFilePath_Coroutine);
-                ((IDisposable)getFilePath_Coroutine).Dispose();
-            }
-#endif
-            // Code from the WebCamTextureToMatHelperExample.
-            // Always invoke the base.
-            base.OnDestroy();
-        }
-
+        private readonly List<ulong> clientsIdsList = new();
 
         /// <summary>
         /// The clients call this to add their ClientId to the list on the Server.
@@ -679,6 +418,267 @@ namespace SEE.Tools.FaceCam
                     TargetClientIds = allOtherClientIds
                 }
             };
+        }
+
+        /// <summary>
+        /// Tell the server to toggle the FaceCam on/off for all clients.
+        /// </summary>
+        /// <remarks>
+        /// This call will be sent to the server. The default [ServerRpc] attribute
+        /// setting allows only a client owner (client that owns the NetworkObject associated
+        /// with the NetworkBehaviour containing the ServerRpc method) invocation rights.
+        /// Any client that isn't the owner won't be allowed to invoke the ServerRpc.
+        /// By setting the ServerRpc attribute's RequireOwnership parameter to false,
+        /// any client has ServerRpc invocation rights.
+        /// </remarks>
+        [ServerRpc(RequireOwnership = false)]
+        private void FaceCamOnOffServerRpc(bool networkFaceCamOn, ServerRpcParams serverRpcParams = default)
+        {
+            // A ServerRpc is a remote procedure call (RPC) that can be only invoked
+            // by a client and will always be received and executed on the server/host.
+#if DEBUG
+            Debug.Log($"[RPC] Server received FaceCamOnOffServerRpc from {serverRpcParams.Receive.SenderClientId} with networkFaceCamOn={networkFaceCamOn}\n");
+#endif
+            FaceCamOnOffClientRpc(networkFaceCamOn);
+        }
+
+        /// <summary>
+        /// Tell the server to toggle the FaceCam position of all clients.
+        /// </summary>
+        [ServerRpc(RequireOwnership = false)]
+        private void FaceCamOnFrontToggleServerRpc(bool networkFaceCamOnFront, ServerRpcParams serverRpcParams = default)
+        {
+#if DEBUG
+            Debug.Log($"[RPC] Server received FaceCamOnFrontToggleServerRpc from {serverRpcParams.Receive.SenderClientId} with networkFaceCamOn={networkFaceCamOnFront}\n");
+#endif
+            FaceCamOnFrontToggleClientRpc(networkFaceCamOnFront);
+        }
+
+        /// <summary>
+        /// Get the FaceCam status from the server to all clients.
+        /// </summary
+        [ServerRpc(RequireOwnership = false)]
+        private void GetFaceCamStatusServerRpc(ServerRpcParams serverRpcParams = default)
+        {
+#if DEBUG
+            Debug.Log($"[RPC] Server received GetFaceCamStatusServerRpc from {serverRpcParams.Receive.SenderClientId}.\n");
+            Debug.Log($"[RPC] Server sends SetFaceCamStatusClientRpc(faceCamOn: {faceCamOn}, faceCamOnFront: {faceCamOnFront}) to all clients.\n");
+#endif
+            SetFaceCamStatusClientRpc(faceCamOn, faceCamOnFront);
+        }
+
+        /// <summary>
+        /// The owner calls this, to send his video to the server which sends it to all clients.
+        /// Also the server and every client will render this video onto the FaceCam.
+        /// </summary>
+        //[ServerRpc(Delivery = RpcDelivery.Unreliable)]
+        // Large files not supported by unreliable Rpc. (No documentation found regarding this limitation).
+        [ServerRpc]
+        private void GetVideoFromClientAndSendItToClientsToRenderItServerRPC(byte[] videoFrame, ServerRpcParams serverRpcParams = default)
+        {
+#if DEBUG
+            Debug.Log($"[RPC] Server received GetVideoFromClientAndSendItToClientsToRenderItServerRPC from {serverRpcParams.Receive.SenderClientId}\n");
+#endif
+
+            // The server will render this video onto his instance of the FaceCam.
+            RenderNetworkFrameOnFaceCam(videoFrame, mainMaterial);
+
+            // The server will send the video to all other clients (not the owner and server)
+            // so they can render it.
+            SendVideoToClientsToRenderItClientRPC(videoFrame);
+        }
+
+        #endregion
+
+        #region Client
+
+        /// <summary>
+        /// Toggle the FaceCam on/off for all clients.
+        /// (Can only be used by the server).
+        /// </summary>
+        /// <remarks>This call is sent from the server to all its clients.</remarks>
+        [ClientRpc]
+        private void FaceCamOnOffClientRpc(bool networkFaceCamOn)
+        {
+#if DEBUG
+            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received FaceCamOnOffClientRpc from server with networkFaceCamOn={networkFaceCamOn}\n");
+#endif
+
+            // Note: The host is both a client and a server. If a host invokes a client RPC,
+            // it triggers the call on all clients, including the host.
+            //
+            // When running as a host, Netcode for GameObjects invokes RPCs immediately within the
+            // same stack as the method invoking the RPC. Since a host is both considered a server
+            // and a client, you should avoid design patterns where a ClientRpc invokes a ServerRpc
+            // that invokes the same ClientRpc as this can end up in a stack overflow (infinite
+            // recursion).
+
+            // NetworkFaceCamOn, resp. FaceCamOn has the value which should be inverted.
+            if (faceCamOn == networkFaceCamOn)
+            {
+                faceCamOn = !faceCamOn;
+                FaceCamOnOffToggle();
+            }
+        }
+
+        /// <summary>
+        /// Toggle the FaceCam position of all clients.
+        /// (Can only be used by the server).
+        /// </summary
+        [ClientRpc]
+        private void FaceCamOnFrontToggleClientRpc(bool networkFaceCamOnFront)
+        {
+#if DEBUG
+            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received FaceCamOnFrontToggleClientRpc from server with networkFaceCamOnFront={networkFaceCamOnFront}\n");
+#endif
+
+            if (faceCamOnFront == networkFaceCamOnFront)
+            {
+                faceCamOnFront = !faceCamOnFront;
+            }
+        }
+
+        /// <summary>
+        /// Set the FaceCam status on all clients.
+        /// (Can only be used by the server).
+        /// </summary
+        [ClientRpc]
+        private void SetFaceCamStatusClientRpc(bool faceCamOn, bool faceCamOnFront)
+        {
+#if DEBUG
+            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received SetFaceCamStatusClientRpc from server with faceCamOn={faceCamOn} and faceCamOnFront={faceCamOnFront}\n");
+#endif
+            this.faceCamOn = faceCamOn;
+            this.faceCamOnFront = faceCamOnFront;
+            // Make the FaceCam visible/invisible and/or start/stop it.
+            FaceCamOnOffToggle();
+        }
+
+        /// <summary>
+        /// The Server calls this, to send his video to all clients.
+        /// Also every client will render this video onto the FaceCam.
+        /// </summary>
+        //[ClientRpc(Delivery = RpcDelivery.Unreliable)]
+        // Large files not supported by unreliable Rpc. (No documentation found regarding this limitation).
+        [ClientRpc]
+        private void SendVideoToClientsToRenderItClientRPC(byte[] videoFrame)
+        {
+#if DEBUG
+            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received SendVideoToClientsToRenderItClientRPC from server\n");
+#endif
+            RenderNetworkFrameOnFaceCam(videoFrame, mainMaterial);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Toggle the FaceCam on off state.
+        /// </summary>
+        private void FaceCamOnOffToggle()
+        {
+            if (faceCamOn)
+            {
+                Debug.Log("FaceCam is playing.\n");
+                webCam.webCamTextureToMatHelper.Play();
+            }
+            else
+            {
+                Debug.Log("FaceCam is stopped.\n");
+                webCam.webCamTextureToMatHelper.Stop();
+            }
+            // Hide the FaceCam if it's deactivated.
+            meshRenderer.enabled = faceCamOn;
+        }
+
+        /// <summary>
+        /// Displays the video on any client, but not where the video is recorded.
+        /// </summary>
+        private void DisplayVideoOnAllOtherClients()
+        {
+            // A frame of the video, created from the source video already displayed on
+            // this owners client.
+            byte[] videoFrame = CreateNetworkFrameFromVideo();
+
+            // videoframe is null if the file size is too big.
+            if (videoFrame == null)
+            {
+                Debug.LogWarning("Video frame is too big. Not being sent.\n");
+                return;
+            }
+            // Send the frame to the server, unless this is the server.
+            if (!IsServer)
+            {
+                GetVideoFromClientAndSendItToClientsToRenderItServerRPC(videoFrame);
+            }
+            else // If this is the owner (creator of video) and also the server.
+            {
+                // Send the frame to all clients. (But not the server and owner, which in
+                // this case, is the server.)
+                SendVideoToClientsToRenderItClientRPC(videoFrame);
+            }
+        }
+
+        /// <summary>
+        /// This creates a frame from the video source.
+        /// The frame can be sent over the network and is compressed.
+        /// </summary>
+        private byte[] CreateNetworkFrameFromVideo()
+        {
+            // Converts the texture to an byte array containing an JPG.
+            byte[] networkTexture = face.EncodeToJPG();
+            // Only return the array if it's not too big.
+            if (networkTexture != null && networkTexture.Length <= maximumNetworkByteSize)
+            {
+                return networkTexture;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Texture2D of the cropped webcam frame, containing the face.
+        /// </summary>
+        public Texture2D face;
+
+        /// <summary>
+        /// The received frame will be rendered onto the FaceCam
+        /// </summary>
+        public void RenderNetworkFrameOnFaceCam(byte[] videoFrame, Material mainMaterial)
+        {
+            face.LoadImage(videoFrame);
+            mainMaterial.mainTexture = face;
+        }
+
+        /// <summary>
+        /// If the FaceCam should be destroyed (player disconnects), clean everything up.
+        /// </summary>
+        public override void OnDestroy()
+        {
+            // Remove own ClientId from the list of connected ClientIds
+            if (!IsServer && !IsOwner) // Owner and server is not in the list.
+            {
+                RemoveClientFromListServerRPC(NetworkManager.Singleton.LocalClientId);
+            }
+
+            // Code from the WebCamTextureToMatHelperExample.
+            if (webCam.webCamTextureToMatHelper != null)
+            {
+                webCam.webCamTextureToMatHelper.Dispose();
+            }
+
+            // Code from the WebCamTextureToMatHelperExample.
+            webCam.faceLandmarkDetector?.Dispose();
+
+            // Code from the WebCamTextureToMatHelperExample.
+#if UNITY_WEBGL
+            if (getFilePath_Coroutine != null)
+            {
+                StopCoroutine(getFilePath_Coroutine);
+                ((IDisposable)getFilePath_Coroutine).Dispose();
+            }
+#endif
+            // Code from the WebCamTextureToMatHelperExample.
+            // Always invoke the base.
+            base.OnDestroy();
         }
     }
 }
