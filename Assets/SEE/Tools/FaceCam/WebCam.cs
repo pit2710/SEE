@@ -11,27 +11,15 @@ using Rect = UnityEngine.Rect;
 
 namespace SEE.Tools.FaceCam
 {
-    public class WebCam //: MonoBehaviour
+    /// <summary>
+    /// Extracts the face of the player sitting in front of a camera.
+    /// </summary>
+    internal class WebCam
     {
         /// <summary>
         /// A frame of the webcam video as texture.
         /// </summary>
         private Texture2D texture;
-
-        /// <summary>
-        /// Texture2D of the cropped webcam frame, containing the face.
-        /// </summary>
-        private Texture2D croppedTexture;
-
-        /// <summary>
-        /// X position of the cropped texture.
-        /// </summary>
-        private int croppedTextureX;
-
-        /// <summary>
-        /// Y position of the cropped texture.
-        /// </summary>
-        private int croppedTextureY;
 
         /// <summary>
         /// Width of the cropped texture.
@@ -175,7 +163,7 @@ namespace SEE.Tools.FaceCam
 
         /// <summary>
         /// Code from the WebCamTextureToMatHelperExample.
-        /// Disposes <see cref="texture"/> and <see cref="croppedTexture"/>.
+        /// Disposes <see cref="texture"/>.
         /// </summary>
         /// <remarks>Code from the WebCamTextureToMatHelperExample.</remarks>
         public void OnWebCamTextureToMatHelperDisposed()
@@ -184,11 +172,6 @@ namespace SEE.Tools.FaceCam
             {
                 Destroyer.Destroy(texture);
                 texture = null;
-            }
-            if (croppedTexture != null)
-            {
-                Destroyer.Destroy(croppedTexture);
-                croppedTexture = null;
             }
         }
 
@@ -208,6 +191,16 @@ namespace SEE.Tools.FaceCam
         /// This is the final maximum height of the FaceCam.
         /// </summary>
         private const float maxHeight = 0.24f;
+
+        /// <summary>
+        /// X position of the cropped face texture.
+        /// </summary>
+        private int croppedTextureX;
+
+        /// <summary>
+        /// Y position of the cropped face texture.
+        /// </summary>
+        private int croppedTextureY;
 
         /// <summary>
         /// Extracts the face from the web cam. The resulting <paramref name="croppedTextureOut"/>
@@ -349,20 +342,19 @@ namespace SEE.Tools.FaceCam
 
                 // Copy the pixels from the original texture to the cutout texture.
                 Color[] pixels = texture.GetPixels(croppedTextureX, croppedTextureY, croppedTextureWidth, croppedTextureHeight);
-                croppedTexture = new Texture2D(croppedTextureWidth, croppedTextureHeight);
-                croppedTexture.SetPixels(pixels);
-                croppedTexture.Apply();
-                croppedTextureOut = croppedTexture;
+                croppedTextureOut = new Texture2D(croppedTextureWidth, croppedTextureHeight);
+                croppedTextureOut.SetPixels(pixels);
+                croppedTextureOut.Apply();
             }
         }
 
+        /// <summary>
+        /// Initializes this <see cref="WebCam"/>.
+        /// </summary>
         internal void Initialize()
         {
             // The startup code from the WebCamTextureToMatHelperExample.
             StartupCodeFromWebCamTextureToMatHelperExample();
-
-            // New texture for the cropped texture only displaying the face, resp. the final texture.
-            croppedTexture = new Texture2D(0, 0, TextureFormat.RGBA32, false);
 
             // Set the speed of the face tracking.
             faceTrackingSpeed = MoveStartSpeed;
