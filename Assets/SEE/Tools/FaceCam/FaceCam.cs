@@ -1,25 +1,36 @@
 #if !PLATFORM_LUMIN || UNITY_EDITOR // This Line of code is from the WebCamTextureToMatHelperExample.
 using OpenCVForUnity.UnityUtils.Helper;
 using SEE.Utils;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 using SEE.Controls;
 using SEE.GO;
+using UnityEngine.Assertions;
 
 namespace SEE.Tools.FaceCam
 {
     /// <summary>
-    /// This component is attached to a FaceCam.prefab, which will be instantiated
-    /// as an immediate child to a game object representing an avatar (a local or
-    /// remote player). It can be used to display a WebCam image of the tracked
+    /// This component can be used to display a WebCam image of the tracked
     /// face of the user over the network.
-    /// It can be switched off, and it can toggle the position between being
-    /// above the player always facing the camera, and the front of the player's face.
+    ///
+    /// This component is attached to a FaceCam.prefab, which in turn is an
+    /// immediate child of an avatar game object. The avatar can be local
+    /// or remote, in other words, every avatar his this child FaceCam prefab
+    /// as a child.
+    ///
+    /// The avatar is assumed to have a <see cref="NetworkObject"/> component
+    /// attached to it.
+    ///
+    /// Note that a <see cref="NetworkBehaviour"/> cannot be instantiated at
+    /// run-time programmatically, it needs to be instantiated along with a
+    /// game object having a <see cref="NetworkObject"/> component.
+    ///
+    /// The face cam can be switched off and off, and it can toggle the position between being
+    /// above the player always facing the camera and the front of the player's face.
     /// </summary>
     [RequireComponent(typeof(WebCamTextureToMatHelper))]
-    public class FaceCam : NetworkBehaviour
+    internal partial class FaceCam : NetworkBehaviour
     {
         /// <summary>
         /// The object with the position where the face/nose of the player is at.
@@ -34,12 +45,6 @@ namespace SEE.Tools.FaceCam
         /// such that it will not be cleaned up by the garbage collector.
         /// </summary>
         private ClientRpcParams clientsIdsRpcParams;
-
-        /// <summary>
-        /// This seems to be the maximum size for files in bytes to be sent over the network.
-        /// (No documentation found regarding this limitation).
-        /// </summary>
-        private const int maximumNetworkByteSize = 32768;
 
         /// <summary>
         /// The WebGL coroutine to get the dlib shape predictor file path.
@@ -284,22 +289,14 @@ namespace SEE.Tools.FaceCam
                     // The local video is displayed.
                     // Renders the cutout texture onto the FaceCam.
                     webCam.GetFace(out Texture2D texture, out Vector3? localScale);
-                    if (texture != null)
-                    {
-                        face = texture;
-                        mainMaterial.mainTexture = texture;
-                    }
-                    if (localScale.HasValue)
-                    {
-                        transform.localScale = localScale.Value;
-                    }
+                    RenderLocalFace(texture, localScale);
                     // Used to send video only at specified frame rate.
                     networkVideoTimer += Time.deltaTime;
                     // Check if this is a Frame in which the video should be transmitted
                     if (networkVideoTimer >= networkVideoDelay)
                     {
                         // Transmit and display the frame on all other clients.
-                        DisplayVideoOnAllOtherClients();
+                        RenderFaceRemotely();
                         networkVideoTimer = 0f;
                     }
                 }
@@ -363,132 +360,6 @@ namespace SEE.Tools.FaceCam
                 }
             }
         }
-
-        #region Server
-
-        /// <summary>
-        /// The network ids of all clients including the local one's.
-        /// This list is maintained only on the server.
-        /// </summary>
-        private readonly List<ulong> clientsIdsList = new();
-
-        /// <summary>
-        /// The clients call this to add their ClientId to the list on the Server.
-        /// </summary>
-        [ServerRpc(RequireOwnership = false)]
-        private void AddClientIdToListServerRPC(ulong clientId, ServerRpcParams serverRpcParams = default)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Server received AddClientIdToListServerRPC from {serverRpcParams.Receive.SenderClientId} with clientId={clientId}\n");
-#endif
-            clientsIdsList.Add(clientId);
-            // Create the RpcParams from the list to make the list usable as RpcParams.
-            CreateClientRpcParams();
-        }
-
-        /// <summary>
-        /// The clients call this to remove their ClientId from the list on the Server.
-        /// </summary>
-        [ServerRpc(RequireOwnership = false)]
-        private void RemoveClientFromListServerRPC(ulong clientId, ServerRpcParams serverRpcParams = default)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Server received RemoveClientFromListServerRPC from {serverRpcParams.Receive.SenderClientId} with clientId={clientId}\n");
-#endif
-            clientsIdsList.Remove(clientId);
-            // Create the RpcParams to make this list usable.
-            CreateClientRpcParams();
-        }
-
-        /// <summary>
-        /// This creates RpcParams from the list of ClientIds to make it usable.
-        /// Only the server needs to work with this list.
-        /// RpcParams is used to send RPC calls only to few Clients, and not to all.
-        /// </summary>
-        private void CreateClientRpcParams()
-        {
-            // Creates the needed array from the editable list.
-            ulong[] allOtherClientIds = clientsIdsList.ToArray();
-
-            // Creates the RpcParams with the array of ClientIds
-            clientsIdsRpcParams = new ClientRpcParams
-            {
-                Send = new ClientRpcSendParams
-                {
-                    TargetClientIds = allOtherClientIds
-                }
-            };
-        }
-
-        /// <summary>
-        /// Tell the server to toggle the FaceCam on/off for all clients.
-        /// </summary>
-        /// <remarks>
-        /// This call will be sent to the server. The default [ServerRpc] attribute
-        /// setting allows only a client owner (client that owns the NetworkObject associated
-        /// with the NetworkBehaviour containing the ServerRpc method) invocation rights.
-        /// Any client that isn't the owner won't be allowed to invoke the ServerRpc.
-        /// By setting the ServerRpc attribute's RequireOwnership parameter to false,
-        /// any client has ServerRpc invocation rights.
-        /// </remarks>
-        [ServerRpc(RequireOwnership = false)]
-        private void FaceCamOnOffServerRpc(bool networkFaceCamOn, ServerRpcParams serverRpcParams = default)
-        {
-            // A ServerRpc is a remote procedure call (RPC) that can be only invoked
-            // by a client and will always be received and executed on the server/host.
-#if DEBUG
-            Debug.Log($"[RPC] Server received FaceCamOnOffServerRpc from {serverRpcParams.Receive.SenderClientId} with networkFaceCamOn={networkFaceCamOn}\n");
-#endif
-            FaceCamOnOffClientRpc(networkFaceCamOn);
-        }
-
-        /// <summary>
-        /// Tell the server to toggle the FaceCam position of all clients.
-        /// </summary>
-        [ServerRpc(RequireOwnership = false)]
-        private void FaceCamOnFrontToggleServerRpc(bool networkFaceCamOnFront, ServerRpcParams serverRpcParams = default)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Server received FaceCamOnFrontToggleServerRpc from {serverRpcParams.Receive.SenderClientId} with networkFaceCamOn={networkFaceCamOnFront}\n");
-#endif
-            FaceCamOnFrontToggleClientRpc(networkFaceCamOnFront);
-        }
-
-        /// <summary>
-        /// Get the FaceCam status from the server to all clients.
-        /// </summary
-        [ServerRpc(RequireOwnership = false)]
-        private void GetFaceCamStatusServerRpc(ServerRpcParams serverRpcParams = default)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Server received GetFaceCamStatusServerRpc from {serverRpcParams.Receive.SenderClientId}.\n");
-            Debug.Log($"[RPC] Server sends SetFaceCamStatusClientRpc(faceCamOn: {faceCamOn}, faceCamOnFront: {faceCamOnFront}) to all clients.\n");
-#endif
-            SetFaceCamStatusClientRpc(faceCamOn, faceCamOnFront);
-        }
-
-        /// <summary>
-        /// The owner calls this, to send his video to the server which sends it to all clients.
-        /// Also the server and every client will render this video onto the FaceCam.
-        /// </summary>
-        //[ServerRpc(Delivery = RpcDelivery.Unreliable)]
-        // Large files not supported by unreliable Rpc. (No documentation found regarding this limitation).
-        [ServerRpc]
-        private void GetVideoFromClientAndSendItToClientsToRenderItServerRPC(byte[] videoFrame, ServerRpcParams serverRpcParams = default)
-        {
-#if DEBUG
-            Debug.Log($"[RPC] Server received GetVideoFromClientAndSendItToClientsToRenderItServerRPC from {serverRpcParams.Receive.SenderClientId}\n");
-#endif
-
-            // The server will render this video onto his instance of the FaceCam.
-            RenderNetworkFrameOnFaceCam(videoFrame, mainMaterial);
-
-            // The server will send the video to all other clients (not the owner and server)
-            // so they can render it.
-            SendVideoToClientsToRenderItClientRPC(videoFrame);
-        }
-
-        #endregion
 
         #region Client
 
@@ -558,15 +429,16 @@ namespace SEE.Tools.FaceCam
         /// The Server calls this, to send his video to all clients.
         /// Also every client will render this video onto the FaceCam.
         /// </summary>
+        /// <param name="videoFrame">the encoded face texture</param>
         //[ClientRpc(Delivery = RpcDelivery.Unreliable)]
         // Large files not supported by unreliable Rpc. (No documentation found regarding this limitation).
         [ClientRpc]
-        private void SendVideoToClientsToRenderItClientRPC(byte[] videoFrame)
+        private void RenderFaceClientRPC(byte[] videoFrame)
         {
 #if DEBUG
             Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received SendVideoToClientsToRenderItClientRPC from server\n");
 #endif
-            RenderNetworkFrameOnFaceCam(videoFrame, mainMaterial);
+            RenderRemoteFace(videoFrame);
         }
 
         #endregion
@@ -593,11 +465,11 @@ namespace SEE.Tools.FaceCam
         /// <summary>
         /// Displays the video on any client, but not where the video is recorded.
         /// </summary>
-        private void DisplayVideoOnAllOtherClients()
+        private void RenderFaceRemotely()
         {
             // A frame of the video, created from the source video already displayed on
             // this owners client.
-            byte[] videoFrame = CreateNetworkFrameFromVideo();
+            byte[] videoFrame = EncodeFace();
 
             // videoframe is null if the file size is too big.
             if (videoFrame == null)
@@ -605,24 +477,36 @@ namespace SEE.Tools.FaceCam
                 Debug.LogWarning("Video frame is too big. Not being sent.\n");
                 return;
             }
+
+            RenderFaceServerRPC(videoFrame);
+#if false
             // Send the frame to the server, unless this is the server.
             if (!IsServer)
             {
-                GetVideoFromClientAndSendItToClientsToRenderItServerRPC(videoFrame);
+                RenderFaceServerRPC(videoFrame);
             }
             else // If this is the owner (creator of video) and also the server.
             {
                 // Send the frame to all clients. (But not the server and owner, which in
                 // this case, is the server.)
-                SendVideoToClientsToRenderItClientRPC(videoFrame);
+                RenderFaceClientRPC(videoFrame);
             }
+#endif
         }
 
         /// <summary>
-        /// This creates a frame from the video source.
+        /// This seems to be the maximum size for files in bytes to be sent over the network.
+        /// (No documentation found regarding this limitation).
+        /// </summary>
+        private const int maximumNetworkByteSize = 32768;
+
+        /// <summary>
+        /// Returns a JPG encoding of the <see cref="face"/> texture.
         /// The frame can be sent over the network and is compressed.
         /// </summary>
-        private byte[] CreateNetworkFrameFromVideo()
+        /// <returns>face data encoded as JPG; may be <c>null</c> if <see cref="face"/>
+        /// could not be encoded or the encoding is too large to be sent</returns>
+        private byte[] EncodeFace()
         {
             // Converts the texture to an byte array containing an JPG.
             byte[] networkTexture = face.EncodeToJPG();
@@ -640,12 +524,52 @@ namespace SEE.Tools.FaceCam
         public Texture2D face;
 
         /// <summary>
-        /// The received frame will be rendered onto the FaceCam
+        /// Renders <paramref name="faceTexture"/>, more precisely, sets <see cref="face"/>
+        /// and <see cref="mainMaterial.mainTexture"/> if this <see cref="FaceCam"/>
+        /// is attached to a remote avatar. If the avatar represents the local player,
+        /// nothing happens.
         /// </summary>
-        public void RenderNetworkFrameOnFaceCam(byte[] videoFrame, Material mainMaterial)
+        /// <param name="faceTexture">encoded face data to be rendered</param>
+        /// <remarks>
+        /// This method is assumed to be called from the server for an avatar representing
+        /// a remote player. The <paramref name="faceTexture"/> represents the face of
+        /// that remote player. It was captured by a different client.</remarks>
+        public void RenderRemoteFace(byte[] faceTexture)
         {
-            face.LoadImage(videoFrame);
-            mainMaterial.mainTexture = face;
+            if (!IsOwner)
+            {
+                if (face.LoadImage(faceTexture))
+                {
+                    mainMaterial.mainTexture = face;
+                }
+                else
+                {
+                    Debug.LogError("Could not decode face texture.\n");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Renders <paramref name="faceTexture"/>.
+        /// </summary>
+        /// <param name="faceTexture">the texture representing a face</param>
+        /// <param name="localScale">the local scale the video tile for rendering the face texture should have;
+        /// ignored if undefined</param>
+        /// <remarks>This method must be called only by the owner. It is intended to
+        /// render the face of the local player for the local player him/herself,
+        /// which is required if the local player looks into the mirror.</remarks>
+        private void RenderLocalFace(Texture2D faceTexture, Vector3? localScale)
+        {
+            Assert.IsTrue(IsOwner);
+            if (faceTexture != null)
+            {
+                face = faceTexture;
+                mainMaterial.mainTexture = faceTexture;
+            }
+            if (localScale.HasValue)
+            {
+                transform.localScale = localScale.Value;
+            }
         }
 
         /// <summary>
