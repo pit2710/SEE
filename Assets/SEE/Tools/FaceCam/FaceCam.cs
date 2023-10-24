@@ -140,6 +140,51 @@ namespace SEE.Tools.FaceCam
 
         private WebCam webCam;
 
+        private void Awake()
+        {
+            webCam = new();
+        }
+
+        #region WebCamTextureToMatHelper event handler
+        /// <summary>
+        /// Notifies the underlying <see cref="webCam"/> that <see cref="WebCamTextureToMatHelper"/>
+        /// has been initialized.
+        /// </summary>
+        /// <remarks>This method is registered at the <see cref="WebCamTextureToMatHelper"/> component
+        /// attached to the same game object this <see cref="FaceCam"/> is attached to.
+        /// The setting is done in the FaceCam prefab.</remarks>
+        public void OnWebCamTextureToMatHelperInitialized()
+        {
+            webCam.OnWebCamTextureToMatHelperInitialized();
+        }
+
+        /// <summary>
+        /// Notifies the underlying <see cref="webCam"/> that <see cref="WebCamTextureToMatHelper"/>
+        /// has been disposed.
+        /// </summary>
+        /// <remarks>This method is registered at the <see cref="WebCamTextureToMatHelper"/> component
+        /// attached to the same game object this <see cref="FaceCam"/> is attached to.
+        /// The setting is done in the FaceCam prefab.</remarks>
+        public void OnWebCamTextureToMatHelperDisposed()
+        {
+            webCam.OnWebCamTextureToMatHelperDisposed();
+        }
+
+        /// <summary>
+        /// Notifies the underlying <see cref="webCam"/> that an error has occurred for the
+        /// <see cref="WebCamTextureToMatHelper"/>
+        /// </summary>
+        /// <remarks>This method is registered at the <see cref="WebCamTextureToMatHelper"/> component
+        /// attached to the same game object this <see cref="FaceCam"/> is attached to.
+        /// The setting is done in the FaceCam prefab.</remarks>
+        /// <param name="errorCode">Error code.</param>
+        public void OnWebCamTextureToMatHelperErrorOccurred(WebCamTextureToMatHelper.ErrorCode errorCode)
+        {
+            WebCam.OnWebCamTextureToMatHelperErrorOccurred(errorCode);
+        }
+
+        #endregion
+
         /// <summary>
         /// Initializes <see cref="webCamTextureToMatHelper"/> if not already set.
         /// Sets <see cref="meshRenderer"/>.
