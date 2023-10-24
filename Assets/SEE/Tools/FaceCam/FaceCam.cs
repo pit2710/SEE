@@ -455,6 +455,7 @@ namespace SEE.Tools.FaceCam
             Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received RenderFaceClientRPC({videoFrame.Length} bytes) from server\n");
 
 #endif
+            Debug.Log($"RenderFaceClientRPC(): receiving {videoFrame.Length} bytes, hash={GetHash(videoFrame)}\n");
             RenderRemoteFace(videoFrame);
         }
 
@@ -495,6 +496,7 @@ namespace SEE.Tools.FaceCam
                 return;
             }
 
+            Debug.Log($"RenderFaceRemotely(): sending {videoFrame.Length} bytes, hash={GetHash(videoFrame)}\n");
             RenderFaceServerRPC(videoFrame);
 #if false
             // Send the frame to the server, unless this is the server.
@@ -509,6 +511,14 @@ namespace SEE.Tools.FaceCam
                 RenderFaceClientRPC(videoFrame);
             }
 #endif
+        }
+
+        public static string GetHash(this byte[] data)
+        {
+            using (var sha1 = new System.Security.Cryptography.SHA1CryptoServiceProvider())
+            {
+                return string.Concat(sha1.ComputeHash(data).Select(x => x.ToString("X2")));
+            }
         }
 
         /// <summary>
