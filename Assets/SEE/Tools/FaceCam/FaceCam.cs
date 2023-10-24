@@ -564,7 +564,6 @@ namespace SEE.Tools.FaceCam
         {
             if (!IsOwner)
             {
-                Debug.Log($"Face: width={face.width} height={face.height}\n");
                 if (faceTexture == null || faceTexture.Length == 0)
                 {
                     Debug.LogError("Received empty face texture.\n");
