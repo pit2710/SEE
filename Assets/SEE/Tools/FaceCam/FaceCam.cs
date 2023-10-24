@@ -7,6 +7,7 @@ using UnityEngine.Serialization;
 using SEE.Controls;
 using SEE.GO;
 using UnityEngine.Assertions;
+using System.Linq;
 
 namespace SEE.Tools.FaceCam
 {
@@ -303,14 +304,17 @@ namespace SEE.Tools.FaceCam
 
             Texture2D GetRandomTexture()
             {
-                Texture2D result = NetworkManager.LocalClientId switch
+                int width = 128;
+                Texture2D result = new(width, width);
+                Color color = NetworkManager.LocalClientId switch
                 {
-                    0 => Texture2D.blackTexture,
-                    1 => Texture2D.redTexture,
-                    2 => Texture2D.grayTexture,
-                    _ => Texture2D.whiteTexture
-                } ;
-                result.Resize(128, 128);
+                    0 => Color.red,
+                    1 => Color.green,
+                    2 => Color.blue,
+                    _ => Color.white
+                };
+                result.SetPixels(Enumerable.Repeat(color, width * width).ToArray());
+                result.Apply();
                 return result;
             }
         }
