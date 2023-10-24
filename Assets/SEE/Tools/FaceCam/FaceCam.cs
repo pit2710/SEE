@@ -286,6 +286,8 @@ namespace SEE.Tools.FaceCam
                     // The local video is displayed.
                     // Renders the cutout texture onto the FaceCam.
                     webCam.GetFace(ref face, out Vector3? localScale);
+
+                    face = GetRandomTexture();
                     RenderLocalFace(face, localScale);
                     // Used to send video only at specified frame rate.
                     networkVideoTimer += Time.deltaTime;
@@ -297,6 +299,19 @@ namespace SEE.Tools.FaceCam
                         networkVideoTimer = 0f;
                     }
                 }
+            }
+
+            Texture2D GetRandomTexture()
+            {
+                Texture2D result = NetworkManager.LocalClientId switch
+                {
+                    0 => Texture2D.blackTexture,
+                    1 => Texture2D.redTexture,
+                    2 => Texture2D.grayTexture,
+                    _ => Texture2D.whiteTexture
+                } ;
+                result.Resize(128, 128);
+                return result;
             }
         }
 
