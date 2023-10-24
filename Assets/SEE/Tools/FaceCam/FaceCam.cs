@@ -220,6 +220,9 @@ namespace SEE.Tools.FaceCam
                 gameObject.SetActive(false);
                 return;
             }
+
+            // New texture for the cropped texture only displaying the face, resp. the final texture.
+            face ??= new Texture2D(0, 0, TextureFormat.RGBA32, false);
         }
 
         /// <summary>
@@ -245,20 +248,13 @@ namespace SEE.Tools.FaceCam
 
             Initialize();
 
-            // The startup code from the WebCamTextureToMatHelperExample.
-            webCam.StartupCodeFromWebCamTextureToMatHelperExample();
-
-            // New texture for the cropped texture only displaying the face, resp. the final texture.
-            webCam.croppedTexture = new Texture2D(0, 0, TextureFormat.RGBA32, false);
+            webCam.Initialize();
 
             // Receive the status of the FaceCam if this is not the owner.
             if (!IsOwner)
             {
                 GetFaceCamStatusServerRpc();
             }
-
-            // Set the speed of the face tracking.
-            webCam.faceTrackingSpeed = webCam.MoveStartSpeed;
 
             // Cache the material of the FaceCam to change its texture later. (Display a default
             // picture or the face of the user).
@@ -303,7 +299,7 @@ namespace SEE.Tools.FaceCam
                     webCam.GetFace(out Texture2D texture, out Vector3? localScale);
                     if (texture != null)
                     {
-                        croppedTexture = texture;
+                        face = texture;
                         mainMaterial.mainTexture = texture;
                     }
                     if (localScale.HasValue)
@@ -544,7 +540,7 @@ namespace SEE.Tools.FaceCam
         private byte[] CreateNetworkFrameFromVideo()
         {
             // Converts the texture to an byte array containing an JPG.
-            byte[] networkTexture = webCam.croppedTexture.EncodeToJPG();
+            byte[] networkTexture = face.EncodeToJPG();
             // Only return the array if it's not too big.
             if (networkTexture != null && networkTexture.Length <= maximumNetworkByteSize)
             {
@@ -577,15 +573,15 @@ namespace SEE.Tools.FaceCam
         /// <summary>
         /// Texture2D of the cropped webcam frame, containing the face.
         /// </summary>
-        public Texture2D croppedTexture;
+        public Texture2D face;
 
         /// <summary>
         /// The received frame will be rendered onto the FaceCam
         /// </summary>
         public void RenderNetworkFrameOnFaceCam(byte[] videoFrame, Material mainMaterial)
         {
-            croppedTexture.LoadImage(videoFrame);
-            mainMaterial.mainTexture = croppedTexture;
+            face.LoadImage(videoFrame);
+            mainMaterial.mainTexture = face;
         }
 
         /// <summary>

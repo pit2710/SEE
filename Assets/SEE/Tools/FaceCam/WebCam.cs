@@ -21,7 +21,7 @@ namespace SEE.Tools.FaceCam
         /// <summary>
         /// Texture2D of the cropped webcam frame, containing the face.
         /// </summary>
-        public Texture2D croppedTexture;
+        private Texture2D croppedTexture;
 
         /// <summary>
         /// X position of the cropped texture.
@@ -354,6 +354,18 @@ namespace SEE.Tools.FaceCam
                 croppedTexture.Apply();
                 croppedTextureOut = croppedTexture;
             }
+        }
+
+        internal void Initialize()
+        {
+            // The startup code from the WebCamTextureToMatHelperExample.
+            StartupCodeFromWebCamTextureToMatHelperExample();
+
+            // New texture for the cropped texture only displaying the face, resp. the final texture.
+            croppedTexture = new Texture2D(0, 0, TextureFormat.RGBA32, false);
+
+            // Set the speed of the face tracking.
+            faceTrackingSpeed = MoveStartSpeed;
         }
     }
 }
