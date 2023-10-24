@@ -298,8 +298,8 @@ namespace SEE.Tools.FaceCam
                 {
                     // The local video is displayed.
                     // Renders the cutout texture onto the FaceCam.
-                    webCam.GetFace(out Texture2D texture, out Vector3? localScale);
-                    RenderLocalFace(texture, localScale);
+                    webCam.GetFace(ref face, out Vector3? localScale);
+                    RenderLocalFace(face, localScale);
                     // Used to send video only at specified frame rate.
                     networkVideoTimer += Time.deltaTime;
                     // Check if this is a Frame in which the video should be transmitted
@@ -446,7 +446,7 @@ namespace SEE.Tools.FaceCam
         private void RenderFaceClientRPC(byte[] videoFrame)
         {
 #if DEBUG
-            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received SendVideoToClientsToRenderItClientRPC from server\n");
+            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received RenderFaceClientRPC from server\n");
 #endif
             RenderRemoteFace(videoFrame);
         }
@@ -518,7 +518,7 @@ namespace SEE.Tools.FaceCam
         /// could not be encoded or the encoding is too large to be sent</returns>
         private byte[] EncodeFace()
         {
-            // Converts the texture to an byte array containing an JPG.
+            // Converts the texture to a byte array containing a JPG.
             byte[] networkTexture = face.EncodeToJPG();
             // Only return the array if it's not too big.
             if (networkTexture != null && networkTexture.Length <= maximumNetworkByteSize)
@@ -581,7 +581,6 @@ namespace SEE.Tools.FaceCam
             Assert.IsTrue(IsOwner);
             if (faceTexture != null)
             {
-                face = faceTexture;
                 mainMaterial.mainTexture = faceTexture;
             }
             if (localScale.HasValue)

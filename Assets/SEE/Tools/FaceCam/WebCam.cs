@@ -210,10 +210,10 @@ namespace SEE.Tools.FaceCam
         /// <param name="croppedTextureOut">The resulting face texture; may be <c>null</c></param>
         /// <param name="localScale">the size of the texture reduced such that it fits into the
         /// face cam's video tile; may be null</param>
-        public void GetFace(out Texture2D croppedTextureOut, out Vector3? localScale)
+        public void GetFace(ref Texture2D croppedTextureOut, out Vector3? localScale)
         {
             localScale = null;
-            croppedTextureOut = null;
+            //croppedTextureOut = null;
 
             // Code from the WebCamTextureToMatHelperExample.
             if (webCamTextureToMatHelper.IsPlaying() && webCamTextureToMatHelper.DidUpdateThisFrame())
@@ -335,7 +335,8 @@ namespace SEE.Tools.FaceCam
                     interpolationFactor += faceTrackingSpeed * Time.deltaTime;
 
                     // Apply the cutout texture size to the FacCam prefab.
-                    // The size is way too big, so it needs to be reduced. A maximum height is used.
+                    // The size of the captured video frame is too big, so it needs to be reduced.
+                    // A maximum height is used.
                     float divisor = croppedTextureHeight / maxHeight;
                     localScale = new Vector3(croppedTextureWidth / divisor, croppedTextureHeight / divisor, -1);
                 }
