@@ -299,7 +299,17 @@ namespace SEE.Tools.FaceCam
                 if (faceCamOn)
                 {
                     // The local video is displayed.
-                    webCam.DisplayLocalVideo(mainMaterial, transform);
+                    // Renders the cutout texture onto the FaceCam.
+                    webCam.GetFace(out Texture2D texture, out Vector3? localScale);
+                    if (texture != null)
+                    {
+                        croppedTexture = texture;
+                        mainMaterial.mainTexture = texture;
+                    }
+                    if (localScale.HasValue)
+                    {
+                        transform.localScale = localScale.Value;
+                    }
                     // Used to send video only at specified frame rate.
                     networkVideoTimer += Time.deltaTime;
                     // Check if this is a Frame in which the video should be transmitted
@@ -557,11 +567,25 @@ namespace SEE.Tools.FaceCam
 #endif
 
             // The server will render this video onto his instance of the FaceCam.
-            webCam.RenderNetworkFrameOnFaceCam(videoFrame, mainMaterial);
+            RenderNetworkFrameOnFaceCam(videoFrame, mainMaterial);
 
             // The server will send the video to all other clients (not the owner and server)
             // so they can render it.
             SendVideoToClientsToRenderItClientRPC(videoFrame);
+        }
+
+        /// <summary>
+        /// Texture2D of the cropped webcam frame, containing the face.
+        /// </summary>
+        public Texture2D croppedTexture;
+
+        /// <summary>
+        /// The received frame will be rendered onto the FaceCam
+        /// </summary>
+        public void RenderNetworkFrameOnFaceCam(byte[] videoFrame, Material mainMaterial)
+        {
+            croppedTexture.LoadImage(videoFrame);
+            mainMaterial.mainTexture = croppedTexture;
         }
 
         /// <summary>
@@ -576,7 +600,7 @@ namespace SEE.Tools.FaceCam
 #if DEBUG
             Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received SendVideoToClientsToRenderItClientRPC from server\n");
 #endif
-            webCam.RenderNetworkFrameOnFaceCam(videoFrame, mainMaterial);
+            RenderNetworkFrameOnFaceCam(videoFrame, mainMaterial);
         }
 
         /// <summary>

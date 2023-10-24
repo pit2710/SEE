@@ -159,10 +159,12 @@ namespace SEE.Tools.FaceCam
             }
         }
 
+        #region WebCamTextureToMatHelper event handlers
+
         /// <summary>
-        /// Code from the WebCamTextureToMatHelperExample.
-        /// Raises the webcam texture to mat helper initialized event.
+        /// Initializes <see cref="texture"/>.
         /// </summary>
+        /// <remarks>Code from the WebCamTextureToMatHelperExample<./remarks>
         public void OnWebCamTextureToMatHelperInitialized()
         {
             Mat webCamTextureMat = webCamTextureToMatHelper.GetMat();
@@ -173,8 +175,9 @@ namespace SEE.Tools.FaceCam
 
         /// <summary>
         /// Code from the WebCamTextureToMatHelperExample.
-        /// Raises the webcam texture to mat helper disposed event.
+        /// Disposes <see cref="texture"/> and <see cref="croppedTexture"/>.
         /// </summary>
+        /// <remarks>Code from the WebCamTextureToMatHelperExample.</remarks>
         public void OnWebCamTextureToMatHelperDisposed()
         {
             if (texture != null)
@@ -190,14 +193,16 @@ namespace SEE.Tools.FaceCam
         }
 
         /// <summary>
-        /// Code from the WebCamTextureToMatHelperExample.
-        /// Raises the web cam texture to mat helper error occurred event.
+        /// Logs the given <paramref name="errorCode"/> as an error.
         /// </summary>
         /// <param name="errorCode">Error code.</param>
+        /// <remarks>Code from the WebCamTextureToMatHelperExample.</remarks>
         public static void OnWebCamTextureToMatHelperErrorOccurred(WebCamTextureToMatHelper.ErrorCode errorCode)
         {
             Debug.LogError($"OnWebCamTextureToMatHelperErrorOccurred {errorCode}\n");
         }
+
+        #endregion
 
         /// <summary>
         /// This is the final maximum height of the FaceCam.
@@ -205,11 +210,18 @@ namespace SEE.Tools.FaceCam
         private const float maxHeight = 0.24f;
 
         /// <summary>
-        /// Render the video.
-        /// The face captured on the Webcam is displayed onto the FaceCam.
+        /// Extracts the face from the web cam. The resulting <paramref name="croppedTextureOut"/>
+        /// contains only the video frame of the web cam that contains the face of the player
+        /// sitting in front of it (that is, the video frame is cropped to the face).
         /// </summary>
-        public void DisplayLocalVideo(Material mainMaterial, Transform transform)
+        /// <param name="croppedTextureOut">The resulting face texture; may be <c>null</c></param>
+        /// <param name="localScale">the size of the texture reduced such that it fits into the
+        /// face cam's video tile; may be null</param>
+        public void GetFace(out Texture2D croppedTextureOut, out Vector3? localScale)
         {
+            localScale = null;
+            croppedTextureOut = null;
+
             // Code from the WebCamTextureToMatHelperExample.
             if (webCamTextureToMatHelper.IsPlaying() && webCamTextureToMatHelper.DidUpdateThisFrame())
             {
@@ -330,9 +342,9 @@ namespace SEE.Tools.FaceCam
                     interpolationFactor += faceTrackingSpeed * Time.deltaTime;
 
                     // Apply the cutout texture size to the FacCam prefab.
-                    // The size is way to big, so it needs to be reduced. A maximum height is used.
+                    // The size is way too big, so it needs to be reduced. A maximum height is used.
                     float divisor = croppedTextureHeight / maxHeight;
-                    transform.localScale = new Vector3(croppedTextureWidth / divisor, croppedTextureHeight / divisor, -1);
+                    localScale = new Vector3(croppedTextureWidth / divisor, croppedTextureHeight / divisor, -1);
                 }
 
                 // Copy the pixels from the original texture to the cutout texture.
@@ -340,19 +352,8 @@ namespace SEE.Tools.FaceCam
                 croppedTexture = new Texture2D(croppedTextureWidth, croppedTextureHeight);
                 croppedTexture.SetPixels(pixels);
                 croppedTexture.Apply();
-
-                // Renders the cutout texture onto the FaceCam.
-                mainMaterial.mainTexture = croppedTexture;
+                croppedTextureOut = croppedTexture;
             }
-        }
-
-        /// <summary>
-        /// The received frame will be rendered onto the FaceCam
-        /// </summary>
-        public void RenderNetworkFrameOnFaceCam(byte[] videoFrame, Material mainMaterial)
-        {
-            croppedTexture.LoadImage(videoFrame);
-            mainMaterial.mainTexture = croppedTexture;
         }
     }
 }
