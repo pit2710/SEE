@@ -513,7 +513,7 @@ namespace SEE.Tools.FaceCam
 #endif
         }
 
-        public static string GetHash(this byte[] data)
+        public static string GetHash(byte[] data)
         {
             using (var sha1 = new System.Security.Cryptography.SHA1CryptoServiceProvider())
             {
