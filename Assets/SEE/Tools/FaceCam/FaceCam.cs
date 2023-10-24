@@ -452,7 +452,8 @@ namespace SEE.Tools.FaceCam
         private void RenderFaceClientRPC(byte[] videoFrame)
         {
 #if DEBUG
-            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received RenderFaceClientRPC from server\n");
+            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received RenderFaceClientRPC({videoFrame.Length} bytes) from server\n");
+
 #endif
             RenderRemoteFace(videoFrame);
         }
@@ -526,9 +527,11 @@ namespace SEE.Tools.FaceCam
         {
             // Converts the texture to a byte array containing a JPG.
             byte[] networkTexture = face.EncodeToJPG();
+            Debug.Log($"networkTexture.Length={networkTexture.Length}");
             // Only return the array if it's not too big.
             if (networkTexture != null && networkTexture.Length <= maximumNetworkByteSize)
             {
+                face.LoadImage(networkTexture);
                 return networkTexture;
             }
             return null;

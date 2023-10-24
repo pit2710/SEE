@@ -120,7 +120,7 @@ namespace SEE.Tools.FaceCam
         private void RenderFaceServerRPC(byte[] videoFrame, ServerRpcParams serverRpcParams = default)
         {
 #if DEBUG
-            Debug.Log($"[RPC] Server received RenderFaceServerRPC from {serverRpcParams.Receive.SenderClientId}\n");
+            //Debug.Log($"[RPC] Server received RenderFaceServerRPC from {serverRpcParams.Receive.SenderClientId}\n");
 #endif
 
             // The server will render this video onto his instance of the FaceCam.
