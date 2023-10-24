@@ -288,7 +288,7 @@ namespace SEE.Tools.FaceCam
                     // Renders the cutout texture onto the FaceCam.
                     webCam.GetFace(ref face, out Vector3? localScale);
 
-                    face = GetRandomTexture();
+                    //face = GetRandomTexture();
                     RenderLocalFace(face, localScale);
                     // Used to send video only at specified frame rate.
                     networkVideoTimer += Time.deltaTime;
@@ -452,10 +452,9 @@ namespace SEE.Tools.FaceCam
         private void RenderFaceClientRPC(byte[] videoFrame)
         {
 #if DEBUG
-            Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received RenderFaceClientRPC({videoFrame.Length} bytes) from server\n");
-
+            //Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received RenderFaceClientRPC({videoFrame.Length} bytes) from server\n");
+            //Debug.Log($"RenderFaceClientRPC(): receiving {videoFrame.Length} bytes, hash={GetHash(videoFrame)}\n");
 #endif
-            Debug.Log($"RenderFaceClientRPC(): receiving {videoFrame.Length} bytes, hash={GetHash(videoFrame)}\n");
             RenderRemoteFace(videoFrame);
         }
 
@@ -496,7 +495,7 @@ namespace SEE.Tools.FaceCam
                 return;
             }
 
-            Debug.Log($"RenderFaceRemotely(): sending {videoFrame.Length} bytes, hash={GetHash(videoFrame)}\n");
+            //Debug.Log($"RenderFaceRemotely(): sending {videoFrame.Length} bytes, hash={GetHash(videoFrame)}\n");
             RenderFaceServerRPC(videoFrame);
 #if false
             // Send the frame to the server, unless this is the server.
@@ -537,11 +536,9 @@ namespace SEE.Tools.FaceCam
         {
             // Converts the texture to a byte array containing a JPG.
             byte[] networkTexture = face.EncodeToJPG();
-            Debug.Log($"networkTexture.Length={networkTexture.Length}");
             // Only return the array if it's not too big.
             if (networkTexture != null && networkTexture.Length <= maximumNetworkByteSize)
             {
-                face.LoadImage(networkTexture);
                 return networkTexture;
             }
             return null;
