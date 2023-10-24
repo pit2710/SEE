@@ -252,9 +252,19 @@ namespace SEE.Tools.FaceCam
             // picture or the face of the user).
             mainMaterial = meshRenderer.material;
 
-            Debug.Log($"[FaceCam.Start] Owner of player {NetworkManager.LocalClient.PlayerObject.name} is server: {NetworkManager.LocalClient.PlayerObject.IsOwnedByServer} or is local client: {NetworkManager.LocalClient.PlayerObject.IsOwner}\n");
+            if (NetworkManager.LocalClient == null)
+            {
+                Debug.LogError("[FaceCam.Start] No local client.\n");
+            }
+            else if (NetworkManager.LocalClient.PlayerObject == null)
+            {
+                Debug.LogError("[FaceCam.Start] No player object for local client.\n");
+            }
+            else
+            {
+                Debug.Log($"[FaceCam.Start] Owner of player {NetworkManager.LocalClient.PlayerObject.name} is server: {NetworkManager.LocalClient.PlayerObject.IsOwnedByServer} or is local client: {NetworkManager.LocalClient.PlayerObject.IsOwner}\n");
+            }
         }
-
 
         /// <summary>
         /// Once per frame, the local video is displayed.
@@ -538,7 +548,15 @@ namespace SEE.Tools.FaceCam
         {
             if (!IsOwner)
             {
-                if (face.LoadImage(faceTexture))
+                if (faceTexture == null || faceTexture.Length == 0)
+                {
+                    Debug.LogError("Received empty face texture.\n");
+                }
+                else if (face is null)
+                {
+                    Debug.LogError("Face texture is null.\n");
+                }
+                else if (face.LoadImage(faceTexture))
                 {
                     mainMaterial.mainTexture = face;
                 }
