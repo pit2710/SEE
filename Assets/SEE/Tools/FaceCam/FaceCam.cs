@@ -190,6 +190,9 @@ namespace SEE.Tools.FaceCam
         /// </summary>
         private void Initialize()
         {
+            // New texture for the cropped texture only displaying the face, resp. the final texture.
+            face = new Texture2D(0, 0, TextureFormat.RGBA32, false);
+
             // For dynamically spawned NetworkObjects (instantiating a network Prefab
             // during runtime) the OnNetworkSpawn method is invoked before the Start
             // method is invoked. So, it's important to be aware of this because finding
@@ -211,11 +214,7 @@ namespace SEE.Tools.FaceCam
             if (!gameObject.TryGetComponentOrLog(out meshRenderer))
             {
                 gameObject.SetActive(false);
-                return;
             }
-
-            // New texture for the cropped texture only displaying the face, resp. the final texture.
-            face ??= new Texture2D(0, 0, TextureFormat.RGBA32, false);
         }
 
         /// <summary>
@@ -452,8 +451,9 @@ namespace SEE.Tools.FaceCam
         private void RenderFaceClientRPC(byte[] videoFrame)
         {
 #if DEBUG
-            //Debug.Log($"[RPC] Client {NetworkManager.Singleton.LocalClientId} received RenderFaceClientRPC({videoFrame.Length} bytes) from server\n");
-            //Debug.Log($"RenderFaceClientRPC(): receiving {videoFrame.Length} bytes, hash={GetHash(videoFrame)}\n");
+            Debug.Log($"[RPC] RenderFaceClientRPC(): Game Object {name} Client {NetworkManager.Singleton.LocalClientId} received RenderFaceClientRPC({videoFrame.Length} bytes) from server.\n"
+                      + $" Receiving {videoFrame.Length} bytes, hash={GetHash(videoFrame)}.\n"
+                      + $" IsServer={IsServer} IsClient={IsClient} IsOwner={IsOwner}.\n");
 #endif
             RenderRemoteFace(videoFrame);
         }
