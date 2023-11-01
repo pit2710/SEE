@@ -203,14 +203,14 @@ namespace SEE.Tools.FaceCam
         private int croppedTextureY;
 
         /// <summary>
-        /// Extracts the face from the web cam. The resulting <paramref name="croppedTextureOut"/>
+        /// Extracts the face from the web cam. The resulting <paramref name="faceTexture"/>
         /// contains only the video frame of the web cam that contains the face of the player
         /// sitting in front of it (that is, the video frame is cropped to the face).
         /// </summary>
-        /// <param name="croppedTextureOut">The resulting face texture; may be <c>null</c></param>
+        /// <param name="faceTexture">The resulting face texture; may be <c>null</c></param>
         /// <param name="localScale">the size of the texture reduced such that it fits into the
         /// face cam's video tile; may be null</param>
-        public void GetFace(ref Texture2D croppedTextureOut, out Vector3? localScale)
+        public void GetFace(ref Texture2D faceTexture, out Vector3? localScale)
         {
             localScale = null;
             //croppedTextureOut = null;
@@ -343,9 +343,9 @@ namespace SEE.Tools.FaceCam
 
                 // Copy the pixels from the original texture to the cutout texture.
                 Color[] pixels = texture.GetPixels(croppedTextureX, croppedTextureY, croppedTextureWidth, croppedTextureHeight);
-                croppedTextureOut = new Texture2D(croppedTextureWidth, croppedTextureHeight);
-                croppedTextureOut.SetPixels(pixels);
-                croppedTextureOut.Apply();
+                faceTexture = new Texture2D(croppedTextureWidth, croppedTextureHeight);
+                faceTexture.SetPixels(pixels);
+                faceTexture.Apply();
             }
         }
 
