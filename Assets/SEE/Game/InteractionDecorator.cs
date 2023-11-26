@@ -130,7 +130,7 @@ namespace SEE.Game
                 //gameObject.AddComponent<GrabLock>();
 
                 // Sets the highlight material.
-                Material mat = Resources.Load<Material>("Materials/HighlightMaterial/Highlight");
+                Material mat = Resources.Load<Material>("Materials/HighlightMaterial/Highlight 1");
                 grabbable.hightlightMaterial = mat;
 
                 // Distance Grabbing FIXME: Not working as intended right now.
