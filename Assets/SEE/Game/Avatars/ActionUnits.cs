@@ -106,6 +106,15 @@ namespace SEE.Game.Avatars
 
         private const string MouthUpLowerR = "Mouth_Up_Lower_R";
 
+        private const string MouthRollOutUpperL = "Mouth_Roll_Out_Upper_L";
+        private const string MouthRollOutUpperR = "Mouth_Roll_Out_Upper_R";
+
+        private const string MouthPushUpperL = "Mouth_Push_Upper_L";
+        private const string MouthPushUpperR = "Mouth_Push_Upper_R";
+
+        private const string MouthPushLowerL = "Mouth_Push_Lower_L";
+        private const string MouthPushLowerR = "Mouth_Push_Lower_R";
+
         // Jaw strings.
         private const string JawOpen = "Jaw_Open";
         private const string JawDown = "Jaw_Down";
@@ -323,6 +332,7 @@ namespace SEE.Game.Avatars
         public float AU_46;
 
         // Show the different blendshapes and their values for the selected action unit. ReadOnly
+        // Brows
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit01 || ActionUnitList == ActionUnit.ActionUnit03")]
         public float Brow_Raise_Inner_L_Value;
 
@@ -335,10 +345,10 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit02 || ActionUnitList == ActionUnit.ActionUnit03 || ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit43")]
         public float Brow_Raise_Outer_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit04")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit04 || ActionUnitList == ActionUnit.ActionUnit09")]
         public float Brow_Drop_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit04")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit04 || ActionUnitList == ActionUnit.ActionUnit09")]
         public float Brow_Drop_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit04")]
@@ -347,23 +357,31 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit04")]
         public float Brow_Compress_R_Value;
 
+        // Cheek
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit46")]
         public float Cheek_Raise_L_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit06")]
         public float Cheek_Raise_R_Value;
 
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit34")]
+        public float Cheek_Puff_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit34")]
+        public float Cheek_Puff_R_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit35")]
+        public float Cheek_Suck_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit35")]
+        public float Cheek_Suck_R_Value;
+
+        // Mouth
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit12 || ActionUnitList == ActionUnit.ActionUnit43")]
         public float Mouth_Smile_L_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit12 || ActionUnitList == ActionUnit.ActionUnit43")]
         public float Mouth_Smile_R_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit09")]
-        public float Nose_Sneer_L_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit09")]
-        public float Nose_Sneer_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit17")]
         public float Mouth_Chin_Up_Value;
@@ -380,43 +398,22 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Press_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit05 || ActionUnitList == ActionUnit.ActionUnit43")]
-        public float Eye_Wide_L_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit05 || ActionUnitList == ActionUnit.ActionUnit43")]
-        public float Eye_Wide_R_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit07 || ActionUnitList == ActionUnit.ActionUnit43 || ActionUnitList == ActionUnit.ActionUnit46")]
-        public float Eye_Squint_L_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit07 || ActionUnitList == ActionUnit.ActionUnit43")]
-        public float Eye_Squint_R_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit08")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit08 || ActionUnitList == ActionUnit.ActionUnit09 || ActionUnitList == ActionUnit.ActionUnit17")]
         public float Mouth_Close_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit08")]
         public float Mouth_Contract_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit08 || ActionUnitList == ActionUnit.ActionUnit19 || ActionUnitList == ActionUnit.ActionUnit27 || ActionUnitList == ActionUnit.ActionUnit32 || ActionUnitList == ActionUnit.ActionUnit37")]
-        public float Jaw_Open_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit10")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit10 || ActionUnitList == ActionUnit.ActionUnit09 || ActionUnitList == ActionUnit.ActionUnit17")]
         public float Mouth_Up_Upper_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit10 || ActionUnitList == ActionUnit.ActionUnit37")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit10 || ActionUnitList == ActionUnit.ActionUnit37 || ActionUnitList == ActionUnit.ActionUnit09 || ActionUnitList == ActionUnit.ActionUnit17")]
         public float Mouth_Up_Upper_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit11")]
-        public float Nose_Crease_L_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit11")]
-        public float Nose_Crease_R_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit13")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit13 || ActionUnitList == ActionUnit.ActionUnit20")]
         public float Mouth_Smile_Sharp_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit13")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit13 || ActionUnitList == ActionUnit.ActionUnit20")]
         public float Mouth_Smile_Sharp_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit14")]
@@ -425,10 +422,10 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit14")]
         public float Mouth_Dimple_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit15")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit15 || ActionUnitList == ActionUnit.ActionUnit12")]
         public float Mouth_Frown_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit15")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit15 || ActionUnitList == ActionUnit.ActionUnit12")]
         public float Mouth_Frown_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit16 || ActionUnitList == ActionUnit.ActionUnit19")]
@@ -448,24 +445,6 @@ namespace SEE.Game.Avatars
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit18")]
         public float Mouth_Pucker_Down_R_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit19 || ActionUnitList == ActionUnit.ActionUnit37")]
-        public float Tongue_Out_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit19 || ActionUnitList == ActionUnit.ActionUnit37")]
-        public float Tongue_Up_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit19")]
-        public float Tongue_Tip_Down_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit19")]
-        public float Tongue_Narrow_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit21")]
-        public float Neck_Tighten_L_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit21")]
-        public float Neck_Tighten_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit22")]
         public float Mouth_Funnel_Up_L_Value;
@@ -491,9 +470,6 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit25 || ActionUnitList == ActionUnit.ActionUnit32")]
         public float Mouth_Shrug_Lower_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit26")]
-        public float Jaw_Down_Value;
-
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit28")]
         public float Mouth_Roll_In_Upper_L_Value;
 
@@ -506,44 +482,45 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit28 || ActionUnitList == ActionUnit.ActionUnit32")]
         public float Mouth_Roll_In_Lower_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit29")]
-        public float Jaw_Forward_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit30")]
-        public float Jaw_L_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit31")]
-        public float Jaw_Up_Value;
-
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit33")]
         public float Mouth_Blow_L_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit33")]
         public float Mouth_Blow_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit34")]
-        public float Cheek_Puff_L_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit34")]
-        public float Cheek_Puff_R_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit35")]
-        public float Cheek_Suck_L_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit35")]
-        public float Cheek_Suck_R_Value;
-
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit36")]
-        public float Tongue_Bulge_L_Value;
-
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit37")]
         public float Mouth_Up_Lower_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit37")]
-        public float Tongue_Wide_Value;
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
+        public float Mouth_Roll_Out_Upper_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit37")]
-        public float Tongue_R_Value;
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
+        public float Mouth_Roll_Out_Upper_R_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
+        public float Mouth_Push_Upper_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
+        public float Mouth_Push_Upper_R_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
+        public float Mouth_Push_Lower_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
+        public float Mouth_Push_Lower_R_Value;
+
+        // Nose
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit09")]
+        public float Nose_Sneer_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit09")]
+        public float Nose_Sneer_R_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit11")]
+        public float Nose_Crease_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit11")]
+        public float Nose_Crease_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit38")]
         public float Nose_Nostril_Dilate_L_Value;
@@ -557,11 +534,69 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit39")]
         public float Nose_Nostril_In_R_Value;
 
+        // Eye
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit05 || ActionUnitList == ActionUnit.ActionUnit43")]
+        public float Eye_Wide_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit05 || ActionUnitList == ActionUnit.ActionUnit43")]
+        public float Eye_Wide_R_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit07 || ActionUnitList == ActionUnit.ActionUnit43 || ActionUnitList == ActionUnit.ActionUnit46")]
+        public float Eye_Squint_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit07 || ActionUnitList == ActionUnit.ActionUnit43")]
+        public float Eye_Squint_R_Value;
+
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit43 || ActionUnitList == ActionUnit.ActionUnit45 || ActionUnitList == ActionUnit.ActionUnit46")]
         public float Eye_Blink_L_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit43 || ActionUnitList == ActionUnit.ActionUnit45")]
         public float Eye_Blink_R_Value;
+
+        // Jaw
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit08 || ActionUnitList == ActionUnit.ActionUnit19 || ActionUnitList == ActionUnit.ActionUnit27 || ActionUnitList == ActionUnit.ActionUnit32 || ActionUnitList == ActionUnit.ActionUnit37")]
+        public float Jaw_Open_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit26")]
+        public float Jaw_Down_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit29")]
+        public float Jaw_Forward_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit30")]
+        public float Jaw_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit31")]
+        public float Jaw_Up_Value;
+
+        // Tongue
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit19 || ActionUnitList == ActionUnit.ActionUnit37")]
+        public float Tongue_Out_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit19 || ActionUnitList == ActionUnit.ActionUnit37")]
+        public float Tongue_Up_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit19")]
+        public float Tongue_Tip_Down_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit19")]
+        public float Tongue_Narrow_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit37")]
+        public float Tongue_Wide_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit37")]
+        public float Tongue_R_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit36")]
+        public float Tongue_Bulge_L_Value;
+
+        // Neck
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit21")]
+        public float Neck_Tighten_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit21")]
+        public float Neck_Tighten_R_Value;
 
         /// <summary>
         /// Get and set the SkinnedMeshRenderer at the start.
@@ -759,19 +794,24 @@ namespace SEE.Game.Avatars
         private void PerformActionUnit04()
         {
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowDropL),
-                ConvertNumberMaintainingRange(0f, 20f, AU_04));
+                AU_04);
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowDropR),
-                ConvertNumberMaintainingRange(0f, 20f, AU_04));
+                AU_04);
+
+            /*
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowCompressL), AU_04);
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowCompressR), AU_04);
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowRaiseInnerL), NoValue);
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowRaiseInnerR), NoValue);
+            */
 
             Brow_Drop_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropL));
             Brow_Drop_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropR));
 
+            /*
             Brow_Compress_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowCompressL));
             Brow_Compress_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowCompressR));
+            */
         }
 
         private void PerformActionUnit05()
@@ -835,8 +875,24 @@ namespace SEE.Game.Avatars
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NoseSneerL), AU_09);
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NoseSneerR), AU_09);
 
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowDropL), ConvertNumberMaintainingRange(0f,  20f, AU_09));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowDropR), ConvertNumberMaintainingRange(0f,  20f, AU_09));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthUpUpperL), ConvertNumberMaintainingRange(0f,  25f, AU_09));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthUpUpperR), ConvertNumberMaintainingRange(0f,  25f, AU_09));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthClose), ConvertNumberMaintainingRange(0f,  5f, AU_09));
+
             Nose_Sneer_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(NoseSneerL));
             Nose_Sneer_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(NoseSneerR));
+
+            Brow_Drop_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropL));
+            Brow_Drop_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropR));
+
+            Mouth_Up_Upper_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropL));
+            Mouth_Up_Upper_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropR));
+            Mouth_Close_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropL));
+
         }
 
         private void PerformActionUnit10()
@@ -862,8 +918,14 @@ namespace SEE.Game.Avatars
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileL), AU_12);
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileR), AU_12);
 
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownL), ConvertNumberMaintainingRange(0f, 50f, AU_12));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownR), ConvertNumberMaintainingRange(0f, 50f, AU_12));
+
             Mouth_Smile_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthSmileL));
             Mouth_Smile_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthSmileR));
+
+            Mouth_Frown_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownL));
+            Mouth_Frown_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownR));
         }
 
         private void PerformActionUnit13()
@@ -906,7 +968,17 @@ namespace SEE.Game.Avatars
         {
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthChinUp), AU_17);
 
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthUpUpperL), ConvertNumberMaintainingRange(0f, 45f, AU_17));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthUpUpperR), ConvertNumberMaintainingRange(0f, 45f, AU_17));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthClose), ConvertNumberMaintainingRange(0f, 5f, AU_17));
+
             Mouth_Chin_Up_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthChinUp));
+
+            Mouth_Up_Upper_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthUpUpperL));
+            Mouth_Up_Upper_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthUpUpperR));
+
+            Mouth_Close_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthClose));
         }
 
         private void PerformActionUnit18()
@@ -948,8 +1020,14 @@ namespace SEE.Game.Avatars
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthStretchL), AU_20);
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthStretchR), AU_20);
 
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileSharpL), ConvertNumberMaintainingRange(0f, 30f, AU_20));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileSharpL), ConvertNumberMaintainingRange(0f, 30f, AU_20));
+
             Mouth_Stretch_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthStretchL));
             Mouth_Stretch_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthStretchR));
+
+            Mouth_Smile_Sharp_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthSmileSharpL));
+            Mouth_Smile_Sharp_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthSmileSharpL));
         }
 
         private void PerformActionUnit21()
@@ -988,8 +1066,28 @@ namespace SEE.Game.Avatars
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthPressL), AU_24);
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthPressR), AU_24);
 
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthRollOutUpperL), ConvertNumberMaintainingRange(0f, 80f, AU_24));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthRollOutUpperR), ConvertNumberMaintainingRange(0f, 80f, AU_24));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthPushUpperL), ConvertNumberMaintainingRange(0f, 40f, AU_24));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthPushUpperR), ConvertNumberMaintainingRange(0f, 40f, AU_24));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthPushLowerL), ConvertNumberMaintainingRange(0f, 40f, AU_24));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthPushLowerR), ConvertNumberMaintainingRange(0f, 40f, AU_24));
+
+
+
             Mouth_Press_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthPressL));
             Mouth_Press_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthPressR));
+
+            Mouth_Roll_Out_Upper_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthRollOutUpperL));
+            Mouth_Roll_Out_Upper_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthRollOutUpperR));
+
+            Mouth_Push_Upper_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthPushUpperL));
+            Mouth_Push_Upper_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthPushUpperR));
+
+            Mouth_Push_Lower_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthPushLowerL));
+            Mouth_Push_Lower_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthPushLowerR));
         }
 
         private void PerformActionUnit25()
