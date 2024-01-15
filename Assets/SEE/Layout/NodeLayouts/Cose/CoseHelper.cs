@@ -128,6 +128,12 @@ namespace SEE.Layout.NodeLayouts.Cose
                         1000.0f,
                         1000.0f,
                         settings.NodeLayoutSettings.IncrementalTreeMap);
+                case NodeLayoutKind.IncrementalEvostreets:
+                    return new IncrementalEvostreetsLayout(
+                        groundLevel,
+                        1000.0f,
+                        1000.0f,
+                        settings.NodeLayoutSettings.IncrementalEvostreets);
                 case NodeLayoutKind.Balloon:
                     return new BalloonNodeLayout(groundLevel);
                 case NodeLayoutKind.CirclePacking:

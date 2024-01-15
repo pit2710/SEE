@@ -551,6 +551,11 @@ namespace SEE.Game.CityRendering
                     parent.transform.lossyScale.x,
                     parent.transform.lossyScale.z,
                     Settings.NodeLayoutSettings.IncrementalTreeMap),
+                NodeLayoutKind.IncrementalEvostreets => new IncrementalEvostreetsLayout(
+                   groundLevel,
+                   parent.transform.lossyScale.x,
+                   parent.transform.lossyScale.z,
+                   Settings.NodeLayoutSettings.IncrementalEvostreets),
                 NodeLayoutKind.Balloon => new BalloonNodeLayout(groundLevel),
                 NodeLayoutKind.CirclePacking => new CirclePackingNodeLayout(groundLevel),
                 NodeLayoutKind.CompoundSpringEmbedder => new CoseLayout(groundLevel, Settings),

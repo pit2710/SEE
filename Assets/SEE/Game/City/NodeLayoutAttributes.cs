@@ -23,6 +23,11 @@ namespace SEE.Game.City
         /// </summary>
         public IncrementalTreeMapAttributes IncrementalTreeMap = new();
 
+
+        /// <summary>
+        /// Settings for the <see cref="SEE.Layout.NodeLayouts.IncrementalEvosteetsLayout"/>.
+        /// </summary>
+        public IncrementalEvostreetsAttributes IncrementalEvostreets = new();
         /// <summary>
         /// The path for the layout file containing the node layout information.
         /// If the file extension is <see cref="Filenames.GVLExtension"/>, the layout is expected
@@ -51,6 +56,8 @@ namespace SEE.Game.City
                 ConfigIO.RestoreEnum(values, nodeLayoutLabel, ref Kind);
                 LayoutPath.Restore(values, layoutPathLabel);
                 IncrementalTreeMap.Restore(values, incrementalTreeMapLabel);
+
+                IncrementalEvostreets.Restore(values, incrementalEvostreetsLabel);
             }
         }
 
@@ -62,6 +69,11 @@ namespace SEE.Game.City
         /// Configuration label for <see cref="IncrementalTreeMap"/>.
         /// </summary>
         private const string incrementalTreeMapLabel = "IncrementalTreeMap";
+
+        /// <summary>
+        /// Configuration label for <see cref="IncrementalEvostreets"/>.
+        /// </summary>
+        private const string incrementalEvostreetsLabel = "IncrementalEvostreets";
         /// <summary>
         /// Configuration label for <see cref="Kind"/>.
         /// </summary>

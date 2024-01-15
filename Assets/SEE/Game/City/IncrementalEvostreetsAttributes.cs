@@ -4,14 +4,13 @@ using System.ComponentModel;
 using SEE.Utils.Config;
 using Sirenix.OdinInspector;
 using UnityEngine;
-
 namespace SEE.Game.City
 {
     /// <summary>
-    /// The settings for <see cref="Layout.NodeLayouts.IncrementalTreeMapLayout"/>.
+    /// The settings for <see cref="Layout.NodeLayouts.IncrementalEvostreetsLayout"/>.
     /// </summary>
     [Serializable]
-    public class IncrementalTreeMapAttributes : ConfigIO.IPersistentConfigItem
+    public class IncrementalEvostreetsAttributes : ConfigIO.IPersistentConfigItem
     {
         /// <summary>
         /// The depth of the local moves search.
@@ -33,7 +32,7 @@ namespace SEE.Game.City
 
         /// <summary>
         /// Defines the specific p norm used in the local moves algorithm. See here:
-        /// <see cref="Layout.NodeLayouts.IncrementalTreeMap.LocalMoves.AspectRatiosPNorm"/>.
+        /// <see cref="Layout.NodeLayouts.IncrementalEvostreets.LocalMoves.AspectRatiosPNorm"/>.
         ///
         /// Notice:
         /// The kind of p norm changes which layout is considered to have the greatest visual quality.
@@ -73,14 +72,14 @@ namespace SEE.Game.City
         /// Maps <see cref="pNorm"/> to a double.
         /// </summary>
         public double PNorm => pNorm switch
-                {
-                    (PNormRange.P1Manhattan) => 1d,
-                    (PNormRange.P2Euclidean) => 2d,
-                    (PNormRange.P3) => 3d,
-                    (PNormRange.P4) => 4d,
-                    (PNormRange.PInfinityChebyshev) => double.PositiveInfinity,
-                    _ => throw new InvalidEnumArgumentException("Unrecognized PNormRange value.")
-                };
+        {
+            (PNormRange.P1Manhattan) => 1d,
+            (PNormRange.P2Euclidean) => 2d,
+            (PNormRange.P3) => 3d,
+            (PNormRange.P4) => 4d,
+            (PNormRange.PInfinityChebyshev) => double.PositiveInfinity,
+            _ => throw new InvalidEnumArgumentException("Unrecognized PNormRange value.")
+        };
 
         public void Save(ConfigWriter writer, string label)
         {
@@ -130,17 +129,6 @@ namespace SEE.Game.City
         private const string paddingLabel = "Padding";
     }
 
-    /// <summary>
-    /// Selection of possible PNorms. Used for better access in Unity Editor for the field
-    /// <see cref="IncrementalEvostreetsAttributes.pNorm"/>.
-    /// </summary>
-    public enum PNormRange
-    {
-        P1Manhattan,
-        P2Euclidean,
-        P3,
-        P4,
-        PInfinityChebyshev,
-    }
 
-}
+
+}     

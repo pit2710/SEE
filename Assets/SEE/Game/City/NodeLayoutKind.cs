@@ -13,6 +13,7 @@
         Manhattan,
         CompoundSpringEmbedder,
         IncrementalTreeMap,
+        IncrementalEvostreets,
         FromFile
     }
 }
