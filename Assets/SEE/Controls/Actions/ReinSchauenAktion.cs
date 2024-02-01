@@ -4,7 +4,8 @@ using SEE.GO;
 using SEE.Net.Actions;
 using SEE.Utils;
 using UnityEngine;
-
+//SEE visualizes hierarchical dependency graphs of software in 
+//    3D/VR based on the city metaphor. The underlying game engine is Unity 3D (version 2022.3.18f1).
 namespace SEE.Controls.Actions
 {
     /// <summary>
@@ -36,24 +37,6 @@ namespace SEE.Controls.Actions
             /// The creation time of the zoom command.
             /// </summary>
             private readonly float startTime;
-
-            internal ZoomCommand(Vector2 zoomCenter, float targetZoomSteps, float duration)
-            {
-                TargetZoomSteps = targetZoomSteps;
-                ZoomCenter = zoomCenter;
-                this.duration = duration;
-                startTime = Time.realtimeSinceStartup;
-            }
-
-            /// <summary>
-            /// Returns true if the command has finished zooming, more precisely,
-            /// if the specified duration of the zooming is reached.
-            /// </summary>
-            /// <returns>Whether the command has finished zooming.</returns>
-            internal bool IsFinished()
-            {
-                return Time.realtimeSinceStartup - startTime >= duration;
-            }
 
             /// <summary>
             /// The current delta in zoom steps, depending on the elapsed time since
