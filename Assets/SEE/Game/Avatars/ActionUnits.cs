@@ -109,11 +109,19 @@ namespace SEE.Game.Avatars
         private const string MouthRollOutUpperL = "Mouth_Roll_Out_Upper_L";
         private const string MouthRollOutUpperR = "Mouth_Roll_Out_Upper_R";
 
+        private const string MouthRollOutLowerL = "Mouth_Roll_Out_Lower_L";
+        private const string MouthRollOutLowerR = "Mouth_Roll_Out_Lower_R";
+
         private const string MouthPushUpperL = "Mouth_Push_Upper_L";
         private const string MouthPushUpperR = "Mouth_Push_Upper_R";
 
         private const string MouthPushLowerL = "Mouth_Push_Lower_L";
         private const string MouthPushLowerR = "Mouth_Push_Lower_R";
+
+        private const string MouthLowerL = "Mouth_Lower_L";
+        private const string MouthLowerR = "Mouth_Lower_R";
+
+        private const string MouthUp = "Mouth_Up";
 
         // Jaw strings.
         private const string JawOpen = "Jaw_Open";
@@ -135,6 +143,11 @@ namespace SEE.Game.Avatars
 
         private const string NoseNostrilInL = "Nose_Nostril_In_L";
         private const string NoseNostrilInR = "Nose_Nostril_In_R";
+
+        private const string NoseNostrilRaiseL = "Nose_Nostril_Raise_L";
+        private const string NoseNostrilRaiseR = "Nose_Nostril_Raise_R";
+
+        private const string NoseTipUp = "Nose_Tip_Up";
 
         // Tongue strings.
         private const string TongueOut = "Tongue_Out";
@@ -339,10 +352,10 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit01 || ActionUnitList == ActionUnit.ActionUnit03")]
         public float Brow_Raise_Inner_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit02 || ActionUnitList == ActionUnit.ActionUnit03 || ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit43")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit02 || ActionUnitList == ActionUnit.ActionUnit03 || ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit43 || ActionUnitList == ActionUnit.ActionUnit09")]
         public float Brow_Raise_Outer_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit02 || ActionUnitList == ActionUnit.ActionUnit03 || ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit43")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit02 || ActionUnitList == ActionUnit.ActionUnit03 || ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit43 || ActionUnitList == ActionUnit.ActionUnit09")]
         public float Brow_Raise_Outer_L_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit04 || ActionUnitList == ActionUnit.ActionUnit09")]
@@ -358,10 +371,10 @@ namespace SEE.Game.Avatars
         public float Brow_Compress_R_Value;
 
         // Cheek
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit46")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit09 || ActionUnitList == ActionUnit.ActionUnit46")]
         public float Cheek_Raise_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit06")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit09")]
         public float Cheek_Raise_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit34")]
@@ -377,6 +390,9 @@ namespace SEE.Game.Avatars
         public float Cheek_Suck_R_Value;
 
         // Mouth
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit17")]
+        public float Mouth_Up_Value;
+
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit06 || ActionUnitList == ActionUnit.ActionUnit12 || ActionUnitList == ActionUnit.ActionUnit43")]
         public float Mouth_Smile_L_Value;
 
@@ -386,10 +402,10 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit17")]
         public float Mouth_Chin_Up_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit20")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit20 || ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Stretch_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit20")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit20 || ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Stretch_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
@@ -410,22 +426,22 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit10 || ActionUnitList == ActionUnit.ActionUnit37 || ActionUnitList == ActionUnit.ActionUnit09 || ActionUnitList == ActionUnit.ActionUnit17")]
         public float Mouth_Up_Upper_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit13 || ActionUnitList == ActionUnit.ActionUnit20")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit13 || ActionUnitList == ActionUnit.ActionUnit12")]
         public float Mouth_Smile_Sharp_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit13 || ActionUnitList == ActionUnit.ActionUnit20")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit13 || ActionUnitList == ActionUnit.ActionUnit12")]
         public float Mouth_Smile_Sharp_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit14")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit14 || ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Dimple_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit14")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit14 || ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Dimple_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit15 || ActionUnitList == ActionUnit.ActionUnit12")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit15 || ActionUnitList == ActionUnit.ActionUnit12 || ActionUnitList == ActionUnit.ActionUnit17 || ActionUnitList == ActionUnit.ActionUnit20 || ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Frown_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit15 || ActionUnitList == ActionUnit.ActionUnit12")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit15 || ActionUnitList == ActionUnit.ActionUnit12 || ActionUnitList == ActionUnit.ActionUnit17 || ActionUnitList == ActionUnit.ActionUnit20 || ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Frown_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit16 || ActionUnitList == ActionUnit.ActionUnit19")]
@@ -476,16 +492,16 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit28")]
         public float Mouth_Roll_In_Upper_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit28 || ActionUnitList == ActionUnit.ActionUnit32")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit28 || ActionUnitList == ActionUnit.ActionUnit32 || ActionUnitList == ActionUnit.ActionUnit17 || ActionUnitList == ActionUnit.ActionUnit20")]
         public float Mouth_Roll_In_Lower_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit28 || ActionUnitList == ActionUnit.ActionUnit32")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit28 || ActionUnitList == ActionUnit.ActionUnit32 || ActionUnitList == ActionUnit.ActionUnit17 || ActionUnitList == ActionUnit.ActionUnit20")]
         public float Mouth_Roll_In_Lower_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit33")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit33 || ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Blow_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit33")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit33 || ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Blow_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit37")]
@@ -498,6 +514,12 @@ namespace SEE.Game.Avatars
         public float Mouth_Roll_Out_Upper_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
+        public float Mouth_Roll_Out_Lower_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
+        public float Mouth_Roll_Out_Lower_R_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Push_Upper_L_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
@@ -508,6 +530,12 @@ namespace SEE.Game.Avatars
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit24")]
         public float Mouth_Push_Lower_R_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit20")]
+        public float Mouth_Lower_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit20")]
+        public float Mouth_Lower_R_Value;
 
         // Nose
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit09")]
@@ -534,6 +562,15 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit39")]
         public float Nose_Nostril_In_R_Value;
 
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit09")]
+        public float Nose_Raise_L_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit09")]
+        public float Nose_Raise_R_Value;
+
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit09")]
+        public float Nose_Tip_Up_Value;
+
         // Eye
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit05 || ActionUnitList == ActionUnit.ActionUnit43")]
         public float Eye_Wide_L_Value;
@@ -541,10 +578,10 @@ namespace SEE.Game.Avatars
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit05 || ActionUnitList == ActionUnit.ActionUnit43")]
         public float Eye_Wide_R_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit07 || ActionUnitList == ActionUnit.ActionUnit43 || ActionUnitList == ActionUnit.ActionUnit46")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit07 || ActionUnitList == ActionUnit.ActionUnit43 || ActionUnitList == ActionUnit.ActionUnit46 || ActionUnitList == ActionUnit.ActionUnit09 || ActionUnitList == ActionUnit.ActionUnit04")]
         public float Eye_Squint_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit07 || ActionUnitList == ActionUnit.ActionUnit43")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit07 || ActionUnitList == ActionUnit.ActionUnit43 || ActionUnitList == ActionUnit.ActionUnit09 || ActionUnitList == ActionUnit.ActionUnit04" )]
         public float Eye_Squint_R_Value;
 
         [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit43 || ActionUnitList == ActionUnit.ActionUnit45 || ActionUnitList == ActionUnit.ActionUnit46")]
@@ -592,10 +629,10 @@ namespace SEE.Game.Avatars
         public float Tongue_Bulge_L_Value;
 
         // Neck
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit21")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit21 || ActionUnitList == ActionUnit.ActionUnit20")]
         public float Neck_Tighten_L_Value;
 
-        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit21")]
+        [ReadOnly] [ShowIf("@this.ActionUnitList == ActionUnit.ActionUnit21 || ActionUnitList == ActionUnit.ActionUnit20")]
         public float Neck_Tighten_R_Value;
 
         /// <summary>
@@ -747,8 +784,8 @@ namespace SEE.Game.Avatars
         /// </summary>
         private void PerformActionUnit01()
         {
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowRaiseInnerL), AU_01);
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowRaiseInnerR), AU_01);
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowRaiseInnerL), ConvertNumberMaintainingRange(0f, 125f, AU_01));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowRaiseInnerR), ConvertNumberMaintainingRange(0f, 125f, AU_01));
 
             Brow_Raise_Inner_L_Value =
                 SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowRaiseInnerL));
@@ -793,10 +830,11 @@ namespace SEE.Game.Avatars
 
         private void PerformActionUnit04()
         {
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowDropL),
-                AU_04);
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowDropR),
-                AU_04);
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowDropL), ConvertNumberMaintainingRange(0f, 115f, AU_04));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowDropR), ConvertNumberMaintainingRange(0f, 115f, AU_04));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(EyeSquintL), ConvertNumberMaintainingRange(0f, 10f, AU_04));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(EyeSquintR), ConvertNumberMaintainingRange(0f, 10f, AU_04));
 
             /*
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowCompressL), AU_04);
@@ -807,6 +845,9 @@ namespace SEE.Game.Avatars
 
             Brow_Drop_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropL));
             Brow_Drop_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropR));
+
+            Eye_Squint_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(EyeSquintL));
+            Eye_Squint_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(EyeSquintR));
 
             /*
             Brow_Compress_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowCompressL));
@@ -872,8 +913,8 @@ namespace SEE.Game.Avatars
 
         private void PerformActionUnit09()
         {
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NoseSneerL), AU_09);
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NoseSneerR), AU_09);
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NoseSneerL), ConvertNumberMaintainingRange(0f, 20f, AU_09));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NoseSneerR), ConvertNumberMaintainingRange(0f, 20f, AU_09));
 
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowDropL), ConvertNumberMaintainingRange(0f,  20f, AU_09));
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowDropR), ConvertNumberMaintainingRange(0f,  20f, AU_09));
@@ -883,6 +924,26 @@ namespace SEE.Game.Avatars
 
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthClose), ConvertNumberMaintainingRange(0f,  5f, AU_09));
 
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(CheekRaiseL), ConvertNumberMaintainingRange(0f, 40f, AU_09));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(CheekRaiseR), ConvertNumberMaintainingRange(0f, 40f, AU_09));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(EyeSquintL), ConvertNumberMaintainingRange(0f, 20f, AU_09));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(EyeSquintR), ConvertNumberMaintainingRange(0f, 20f, AU_09));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NoseNostrilRaiseL), ConvertNumberMaintainingRange(0f, 115f, AU_09));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NoseNostrilRaiseR), ConvertNumberMaintainingRange(0f, 115f, AU_09));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowRaiseOuterL), ConvertNumberMaintainingRange(0f, -25f, AU_09));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(BrowRaiseOuterR), ConvertNumberMaintainingRange(0f, -25f, AU_09));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NoseTipUp), ConvertNumberMaintainingRange(0f, 50f, AU_09));
+
+
+            Nose_Tip_Up_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(NoseTipUp));
+
+            Brow_Raise_Outer_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowRaiseOuterL));
+            Brow_Raise_Outer_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowRaiseOuterR));
+
             Nose_Sneer_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(NoseSneerL));
             Nose_Sneer_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(NoseSneerR));
 
@@ -891,7 +952,17 @@ namespace SEE.Game.Avatars
 
             Mouth_Up_Upper_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropL));
             Mouth_Up_Upper_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropR));
-            Mouth_Close_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(BrowDropL));
+
+            Mouth_Close_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthClose));
+
+            Cheek_Raise_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(CheekRaiseL));
+            Cheek_Raise_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(CheekRaiseR));
+
+            Eye_Squint_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(EyeSquintL));
+            Eye_Squint_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(EyeSquintR));
+
+            Nose_Raise_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(NoseNostrilRaiseL));
+            Nose_Raise_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(NoseNostrilRaiseR));
 
         }
 
@@ -915,17 +986,23 @@ namespace SEE.Game.Avatars
 
         private void PerformActionUnit12()
         {
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileL), AU_12);
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileR), AU_12);
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileL), ConvertNumberMaintainingRange(0f, 75f, AU_12));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileR), ConvertNumberMaintainingRange(0f, 75f, AU_12));
 
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownL), ConvertNumberMaintainingRange(0f, 50f, AU_12));
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownR), ConvertNumberMaintainingRange(0f, 50f, AU_12));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileSharpL), ConvertNumberMaintainingRange(0f, 25f, AU_12));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileSharpR), ConvertNumberMaintainingRange(0f, 25f, AU_12));
+
+            //SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownL), ConvertNumberMaintainingRange(0f, 50f, AU_12));
+            //SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownR), ConvertNumberMaintainingRange(0f, 50f, AU_12));
 
             Mouth_Smile_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthSmileL));
             Mouth_Smile_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthSmileR));
 
-            Mouth_Frown_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownL));
-            Mouth_Frown_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownR));
+            Mouth_Smile_Sharp_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthSmileSharpL));
+            Mouth_Smile_Sharp_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthSmileSharpR));
+
+            //Mouth_Frown_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownL));
+            //Mouth_Frown_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownR));
         }
 
         private void PerformActionUnit13()
@@ -966,12 +1043,20 @@ namespace SEE.Game.Avatars
 
         private void PerformActionUnit17()
         {
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthChinUp), AU_17);
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthChinUp), ConvertNumberMaintainingRange(0f, 125f, AU_17));
 
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthUpUpperL), ConvertNumberMaintainingRange(0f, 45f, AU_17));
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthUpUpperR), ConvertNumberMaintainingRange(0f, 45f, AU_17));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthUpUpperL), ConvertNumberMaintainingRange(0f, 20f, AU_17));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthUpUpperR), ConvertNumberMaintainingRange(0f, 20f, AU_17));
 
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthClose), ConvertNumberMaintainingRange(0f, 5f, AU_17));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthUp), ConvertNumberMaintainingRange(0f, 80f, AU_17));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownL), ConvertNumberMaintainingRange(0f, 40f, AU_17));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownR), ConvertNumberMaintainingRange(0f, 40f, AU_17));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthRollInLowerL), ConvertNumberMaintainingRange(0f, 40f, AU_17));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthRollInLowerR), ConvertNumberMaintainingRange(0f, 40f, AU_17));
+
 
             Mouth_Chin_Up_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthChinUp));
 
@@ -979,6 +1064,14 @@ namespace SEE.Game.Avatars
             Mouth_Up_Upper_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthUpUpperR));
 
             Mouth_Close_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthClose));
+
+            Mouth_Up_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthUp));
+
+            Mouth_Frown_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownL));
+            Mouth_Frown_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownR));
+
+            Mouth_Roll_In_Lower_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthRollInLowerL));
+            Mouth_Roll_In_Lower_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthRollInLowerR));
         }
 
         private void PerformActionUnit18()
@@ -1017,17 +1110,37 @@ namespace SEE.Game.Avatars
 
         private void PerformActionUnit20()
         {
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthStretchL), AU_20);
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthStretchR), AU_20);
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthStretchL), ConvertNumberMaintainingRange(0f, 75f, AU_20));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthStretchR), ConvertNumberMaintainingRange(0f, 75f, AU_20));
 
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileSharpL), ConvertNumberMaintainingRange(0f, 30f, AU_20));
-            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthSmileSharpL), ConvertNumberMaintainingRange(0f, 30f, AU_20));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownL), ConvertNumberMaintainingRange(0f, 40f, AU_20));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownR), ConvertNumberMaintainingRange(0f, 40f, AU_20));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthRollInLowerL), ConvertNumberMaintainingRange(0f, 30f, AU_20));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthRollInLowerR), ConvertNumberMaintainingRange(0f, 30f, AU_20));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthLowerL), ConvertNumberMaintainingRange(0f, 50f, AU_20));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthLowerR), ConvertNumberMaintainingRange(0f, 50f, AU_20));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NeckTightenL), ConvertNumberMaintainingRange(0f, 50f, AU_20));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(NeckTightenR), ConvertNumberMaintainingRange(0f, 50f, AU_20));
+
 
             Mouth_Stretch_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthStretchL));
             Mouth_Stretch_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthStretchR));
 
-            Mouth_Smile_Sharp_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthSmileSharpL));
-            Mouth_Smile_Sharp_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthSmileSharpL));
+            Mouth_Frown_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownL));
+            Mouth_Frown_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownR));
+
+            Mouth_Roll_In_Lower_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthRollInLowerL));
+            Mouth_Roll_In_Lower_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthRollInLowerR));
+
+            Mouth_Lower_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthLowerL));
+            Mouth_Lower_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthLowerR));
+
+            Neck_Tighten_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(NeckTightenL));
+            Neck_Tighten_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(NeckTightenR));
+
         }
 
         private void PerformActionUnit21()
@@ -1066,6 +1179,12 @@ namespace SEE.Game.Avatars
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthPressL), AU_24);
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthPressR), AU_24);
 
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthStretchL), ConvertNumberMaintainingRange(0f, -20f, AU_24));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthStretchR), ConvertNumberMaintainingRange(0f, -20f, AU_24));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthRollOutLowerL), ConvertNumberMaintainingRange(0f, 40f, AU_24));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthRollOutLowerR), ConvertNumberMaintainingRange(0f, 40f, AU_24));
+
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthRollOutUpperL), ConvertNumberMaintainingRange(0f, 80f, AU_24));
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthRollOutUpperR), ConvertNumberMaintainingRange(0f, 80f, AU_24));
 
@@ -1075,10 +1194,23 @@ namespace SEE.Game.Avatars
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthPushLowerL), ConvertNumberMaintainingRange(0f, 40f, AU_24));
             SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthPushLowerR), ConvertNumberMaintainingRange(0f, 40f, AU_24));
 
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownL), ConvertNumberMaintainingRange(0f, 30f, AU_24));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthFrownR), ConvertNumberMaintainingRange(0f, 30f, AU_24));
 
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthDimpleL), ConvertNumberMaintainingRange(0f, -50f, AU_24));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthDimpleR), ConvertNumberMaintainingRange(0f, -50f, AU_24));
+
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthBlowL), ConvertNumberMaintainingRange(0f, 10f, AU_24));
+            SkinnedMeshRenderer.SetBlendShapeWeight(BlendShapeByString(MouthBlowR), ConvertNumberMaintainingRange(0f, 10f, AU_24));
 
             Mouth_Press_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthPressL));
             Mouth_Press_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthPressR));
+
+            Mouth_Stretch_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthStretchL));
+            Mouth_Stretch_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthStretchR));
+
+            Mouth_Roll_Out_Lower_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthRollOutLowerL));
+            Mouth_Roll_Out_Lower_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthRollOutLowerR));
 
             Mouth_Roll_Out_Upper_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthRollOutUpperL));
             Mouth_Roll_Out_Upper_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthRollOutUpperR));
@@ -1088,6 +1220,15 @@ namespace SEE.Game.Avatars
 
             Mouth_Push_Lower_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthPushLowerL));
             Mouth_Push_Lower_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthPushLowerR));
+
+            Mouth_Frown_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownL));
+            Mouth_Frown_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthFrownR));
+
+            Mouth_Dimple_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthDimpleL));
+            Mouth_Dimple_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthDimpleR));
+
+            Mouth_Blow_L_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthBlowL));
+            Mouth_Blow_R_Value = SkinnedMeshRenderer.GetBlendShapeWeight(BlendShapeByString(MouthBlowR));
         }
 
         private void PerformActionUnit25()
