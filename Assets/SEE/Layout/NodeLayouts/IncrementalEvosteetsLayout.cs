@@ -8,6 +8,12 @@ using SEE.Game.City;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Node = SEE.Layout.NodeLayouts.IncrementalEvostreets.Node;
+using SEE.Layout.NodeLayouts.EvoStreets;
+
+using System.ComponentModel;
+using static RootMotion.FinalIK.GrounderQuadruped;
+using Crosstales;
+using Dissonance;
 
 
 namespace SEE.Layout.NodeLayouts
@@ -31,7 +37,31 @@ namespace SEE.Layout.NodeLayouts
             this.width = width;
             this.depth = depth;
             this.settings = settings;
+      
         }
+
+        static int layoutLevel = -1;
+
+        /// <summary>
+        /// <see cref="CalculateStreetWidth(IList{ILayoutNode})"/> determines a statistical
+        /// parameter of the widths and depths of all leaf nodes (the average) and adjusts
+        /// this statistical parameter by multiplying it with this factor <see cref="streetWidthPercentage"/>.
+        /// </summary>
+        private const float streetWidthPercentage = 0.3f;
+
+        /// <summary>
+        /// Is used to calculate the offset between buildings as this factor multiplied by
+        /// the absolute street width for the root node.
+        /// </summary>
+        private const float offsetBetweenBuildingsPercentage = 0.3f;
+
+        /// <summary>
+        /// The height (y co-ordinate) of game objects (inner tree nodes) represented by streets.
+        /// The actual value used will be multiplied by leafNodeFactory.Unit.
+        /// </summary>
+        private readonly float streetHeight = 0.0001f;
+
+
 
         /// <summary>
         /// The adjustable parameters for the layout.
@@ -51,8 +81,7 @@ namespace SEE.Layout.NodeLayouts
         /// <summary>
         /// The node layout we compute as a result.
         /// </summary>
-        private readonly Dictionary<ILayoutNode, NodeTransform> layoutResult = new();
-
+        private  Dictionary<ILayoutNode, NodeTransform> layoutResult = new(); //removed readonly
         /// <summary>
         /// A map to find a node (fast) by its ID
         /// </summary>
@@ -90,17 +119,120 @@ namespace SEE.Layout.NodeLayouts
         }
         public override Dictionary<ILayoutNode, NodeTransform> Layout(IEnumerable<ILayoutNode> layoutNodes)
         {
+
+            //Set the layoutlevel +1 for each created Layout
+            layoutLevel += 1;
+
+            //UnityEngine.Debug.LogWarning($"LayoutLevel:{layoutLevel}");
             List<ILayoutNode> layoutNodesList = layoutNodes.ToList();
             if (!layoutNodesList.Any())
             {
                 throw new ArgumentException("No nodes to be laid out.");
             }
+            //List<Node> nodes = layoutNodes.Select(n => nodeMap[n.ID]).ToList();
+            //// check if the old layout can be used to lay out siblings.
 
-            this.Roots = LayoutNodes.GetRoots(layoutNodesList);
-            InitNodes();
-            Rectangle rectangle = new Rectangle(x: -width / 2.0f, z: -depth / 2.0f, width, depth);
-            CalculateLayout(Roots, rectangle);
+
+            IncrementalEvostreets.Rectangle rectangle = new IncrementalEvostreets.Rectangle(x: -width / 2.0f, z: -depth / 2.0f, width, depth);
+         
+            if (oldLayout == null)
+            // || NumberOfOccurrencesInOldGraph(nodes) <= 4
+            //|| ParentsInOldGraph(nodes).Count != 1)
+            {
+
+                this.Roots = LayoutNodes.GetRoots(layoutNodesList);
+                InitNodes();
+                UnityEngine.Debug.LogWarning($"Create new Layout{layoutLevel}");
+                LayoutDescriptor treeDescriptor;
+                treeDescriptor.StreetWidth = CalculateStreetWidth(layoutNodes.ToList());
+                treeDescriptor.OffsetBetweenBuildings = treeDescriptor.StreetWidth * offsetBetweenBuildingsPercentage;
+                ILayoutNode root = Roots.FirstOrDefault();
+                ENode rootNode = GenerateHierarchy(root);
+                treeDescriptor.MaximalDepth = MaxDepth(root);
+                treeDescriptor.StreetWidth = CalculateStreetWidth(layoutNodes.ToList());
+                rootNode.SetSize(Orientation.East, treeDescriptor);
+                rootNode.SetLocation(Orientation.East, new Location(0, 0));
+
+                Dictionary<ILayoutNode, NodeTransform> layoutResult = new Dictionary<ILayoutNode, NodeTransform>();
+                rootNode.ToLayout(ref layoutResult, GroundLevel + (float)(20 * layoutLevel), streetHeight);
+
+                UnityEngine.Debug.Log("Erstes Layout Results");
+
+                foreach (KeyValuePair<ILayoutNode, NodeTransform> keyValuePair in layoutResult)
+                {
+                    UnityEngine.Debug.Log($"{keyValuePair.Key},{keyValuePair.Value}");
+                }
+            }
+            else
+            {
+
+
+                //oldNodes are not only the siblings that are in the old graph and in the new one,
+                //but all siblings in old graph.Note that there is exactly one single parent (because of the if-clause),
+                //but this parent can be null if children == roots
+
+                //    List<Node> nodes = layoutNodes.Select(n => nodeMap[n.ID]).ToList();
+                //ILayoutNode oldILayoutParent = ParentsInOldGraph(nodes).First();
+                //ICollection<ILayoutNode> oldILayoutSiblings =
+                //    oldILayoutParent == null ? oldLayout.Roots : oldILayoutParent.Children();
+                //List<Node> oldNodes = oldILayoutSiblings.Select(n => oldLayout.nodeMap[n.ID]).ToList();
+                //// Node List use to create the new layout from the preveus ones
+                //SetupNodeLists(nodes, oldNodes,
+                //    out List<Node> workWith,
+                //    out List<Node> nodesToBeDeleted,
+                //    out List<Node> nodesToBeAdded);
+                ////  Dictionary<ILayoutNode, NodeTransform> layoutResult = new Dictionary<ILayoutNode, NodeTransform>();
+
+
+                UnityEngine.Debug.Log("Zweite. Layout Results");
+                foreach (KeyValuePair<ILayoutNode, NodeTransform> keyValuePair in oldLayout.layoutResult)
+                {
+                    UnityEngine.Debug.Log($"{keyValuePair.Key},{keyValuePair.Value}");
+                }
+                UnityEngine.Debug.Log("calculate Layout from old Layout");
+                layoutResult.Clear();
+               //layoutResult = new Dictionary<ILayoutNode, NodeTransform>(oldLayout.layoutResult);
+               
+                //  Dictionary<ILayoutNode, NodeTransform> layoutResult = new Dictionary<ILayoutNode, NodeTransform>();
+                foreach (KeyValuePair<ILayoutNode, NodeTransform> keyValuePair in oldLayout.layoutResult)
+                {
+                    UnityEngine.Debug.LogWarning($"{keyValuePair.Key},{keyValuePair.Value}\n");
+                    layoutResult.Add(keyValuePair.Key, new NodeTransform(keyValuePair.Value.Position, keyValuePair.Value.Scale) );
+                }
+                //layoutResult.Add()
+
+                //  CalculateLayout(Roots, rectangle);
+            }
+
+            //}
+            //else
+            //{
+
+
+            //}
+
             return layoutResult;
+        }
+
+
+        /// <summary>
+        /// Creates the ENode tree hierarchy starting at given root node. The root has
+        /// depth 0.
+        /// </summary>
+        /// <param name="root">root of the hierarchy</param>
+        /// <returns>root ENode</returns>
+        private static ENode GenerateHierarchy(ILayoutNode root, int depth = 0)
+        {
+            ENode result = ENodeFactory.Create(root);
+            result.TreeDepth = depth;
+            if (result is EInner inner)
+            {
+                foreach (ILayoutNode child in root.Children())
+                {
+                    inner.AddChild(GenerateHierarchy(child, depth + 1));
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -156,42 +288,47 @@ namespace SEE.Layout.NodeLayouts
         /// </summary>
         /// <param name="siblings">nodes with same parent (or roots)</param>
         /// <param name="rectangle">area to place siblings</param>
-        private void CalculateLayout(ICollection<ILayoutNode> siblings, Rectangle rectangle)
+        private void CalculateLayout(ICollection<ILayoutNode> siblings, IncrementalEvostreets.Rectangle rectangle) //
         {
+          
             List<Node> nodes = siblings.Select(n => nodeMap[n.ID]).ToList();
             // check if the old layout can be used to lay out siblings.
             if (oldLayout == null
                 || NumberOfOccurrencesInOldGraph(nodes) <= 4
                 || ParentsInOldGraph(nodes).Count != 1)
             {
-                Dissect.Apply(nodes, rectangle);
+                // Dissect.Apply(nodes, rectangle);
+           
+
             }
             else
             {
-                ApplyIncrementalLayout(nodes, rectangle);
+     
+
+                  ApplyIncrementalLayout(nodes, rectangle);
             }
 
             AddToLayout(nodes);
 
-            foreach (ILayoutNode node in siblings)
-            {
-                ICollection<ILayoutNode> children = node.Children();
-                if (children.Count <= 0)
-                {
-                    continue;
-                }
+            //foreach (ILayoutNode node in siblings)
+            //{
+            //    ICollection<ILayoutNode> children = node.Children();
+            //    if (children.Count <= 0)
+            //    {
+            //        continue;
+            //    }
 
-                Rectangle childRectangle = nodeMap[node.ID].Rectangle;
-                CalculateLayout(children, childRectangle);
-            }
+            //    //EvoStreets.Rectangle childRectangle = nodeMap[node.ID].Rectangle;
+            //    //CalculateLayout(children, childRectangle);
+            //}
         }
 
-        /// <summary>
-        /// Calculates a stable layout for <paramref name="nodes"/>.
-        /// </summary>
-        /// <param name="nodes">nodes to be laid out</param>
-        /// <param name="rectangle">rectangle in which the nodes should be laid out</param>
-        private void ApplyIncrementalLayout(List<Node> nodes, Rectangle rectangle)
+        // <summary>
+        // Calculates a stable layout for <paramref name = "nodes" />.
+        // </ summary >
+        // < param name="nodes">nodes to be laid out</param>
+        // <param name = "rectangle" > rectangle in which the nodes should be laid out</param>
+        private void ApplyIncrementalLayout(List<Node> nodes, IncrementalEvostreets.Rectangle rectangle)
         {
             // oldNodes are not only the siblings that are in the old graph and in the new one,
             // but all siblings in old graph. Note that there is exactly one single parent (because of the if-clause),
@@ -206,7 +343,7 @@ namespace SEE.Layout.NodeLayouts
                 out List<Node> nodesToBeDeleted,
                 out List<Node> nodesToBeAdded);
 
-            Rectangle oldRectangle = IncrementalEvostreets.Utils.CreateParentRectangle(oldNodes);
+          IncrementalEvostreets.Rectangle oldRectangle = IncrementalEvostreets.Utils.CreateParentRectangle(oldNodes);
             IncrementalEvostreets.Utils.TransformRectangles(workWith,
                 oldRectangle: oldRectangle,
                 newRectangle: rectangle);
@@ -321,7 +458,8 @@ namespace SEE.Layout.NodeLayouts
             foreach (Node node in nodes)
             {
                 float absolutePadding = settings.PaddingMm / 1000;
-                Rectangle rectangle = node.Rectangle;
+                IncrementalEvostreets.Rectangle rectangle = node.Rectangle;
+
                 ILayoutNode layoutNode = iLayoutNodeMap[node.ID];
 
                 if (rectangle.Width - absolutePadding <= 0 ||
@@ -339,8 +477,34 @@ namespace SEE.Layout.NodeLayouts
                     layoutNode.LocalScale.y,
                     (float)(rectangle.Depth - absolutePadding));
 
+
+
                 layoutResult[layoutNode] = new NodeTransform(position, scale);
             }
+        }
+
+        /// <summary>
+        /// Returns the width of the street for the root as a percentage <see cref="streetWidthPercentage"/>
+        /// of the average of all widths and depths of leaf nodes in <paramref name="layoutNodes"/>.
+        /// </summary>
+        /// <param name="layoutNodes">the nodes to be laid out</param>
+        /// <returns>width of street for the root</returns>
+        private static float CalculateStreetWidth(IList<ILayoutNode> layoutNodes)
+        {
+            float result = 0;
+            int numberOfLeaves = 0;
+            foreach (ILayoutNode node in layoutNodes)
+            {
+                if (node.IsLeaf)
+                {
+                    numberOfLeaves++;
+                    result += node.AbsoluteScale.x > node.AbsoluteScale.z ? node.AbsoluteScale.x : node.AbsoluteScale.z;
+                }
+            }
+            UnityEngine.Assertions.Assert.IsTrue(numberOfLeaves > 0);
+            result /= numberOfLeaves;
+            // result is now the average length over all widths and depths of all leaf nodes.
+            return result * streetWidthPercentage;
         }
 
         public override Dictionary<ILayoutNode, NodeTransform> Layout
