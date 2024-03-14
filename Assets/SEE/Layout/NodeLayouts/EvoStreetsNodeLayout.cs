@@ -81,7 +81,7 @@ namespace SEE.Layout.NodeLayouts
                 rootNode.SetLocation(Orientation.East, new Location(0, 0));
 
                 Dictionary<ILayoutNode, NodeTransform> layoutResult = new Dictionary<ILayoutNode, NodeTransform>();
-                rootNode.ToLayout(ref layoutResult, GroundLevel, streetHeight);
+                rootNode.ToLayout(layoutResult, GroundLevel, streetHeight);
                 return layoutResult;
             }
         }

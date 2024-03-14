@@ -1,5 +1,4 @@
-﻿using Antlr4.Runtime.Tree;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -212,7 +211,7 @@ namespace SEE.Layout.NodeLayouts.EvoStreets
         /// <param name="groundLevel">the y co-ordinate of the ground of this node to be added to <paramref name="layoutResult"/></param>
         /// <param name="layoutResult">layout where to add the layout information</param>
         /// <param name="streetHeight">the height of an inner node (depicted as street)</param>
-        public abstract void ToLayout(ref Dictionary<ILayoutNode, NodeTransform> layoutResult, float groundLevel, float streetHeight);
+        public abstract void ToLayout(Dictionary<ILayoutNode, NodeTransform> layoutResult, float groundLevel, float streetHeight);
 
         /// <summary>
         /// Prints this node with an indentation proportional to its <see cref="TreeDepth"/>. Can be used for debugging.
@@ -307,10 +306,10 @@ namespace SEE.Layout.NodeLayouts.EvoStreets
         /// <param name="groundLevel">the y co-ordinate of the ground of this node to be added to <paramref name="layoutResult"/></param>
         /// <param name="layoutResult">layout where to add the layout information</param>
         /// <param name="streetHeight">will be ignored</param>
-        public override void ToLayout(ref Dictionary<ILayoutNode, NodeTransform> layoutResult, float groundLevel, float streetHeight)
+        public override void ToLayout(Dictionary<ILayoutNode, NodeTransform> layoutResult, float groundLevel, float streetHeight)
         {
             layoutResult[GraphNode] = new NodeTransform(new Vector3(Rectangle.Center.X, groundLevel, Rectangle.Center.Y),
-                                                         new Vector3 (Rectangle.Width, GraphNode.AbsoluteScale.y, Rectangle.Depth),                                       0);
+                                                        new Vector3 (Rectangle.Width, GraphNode.AbsoluteScale.y, Rectangle.Depth),                                       0);
         }
     }
 
@@ -575,7 +574,7 @@ namespace SEE.Layout.NodeLayouts.EvoStreets
         /// <param name="groundLevel">the y co-ordinate of the ground of this node to be added to <paramref name="layoutResult"/></param>
         /// <param name="layoutResult">layout where to add the layout information</param>
         /// <param name="streetHeight">the height of an inner node (depicted as street)</param>
-        public override void ToLayout(ref Dictionary<ILayoutNode, NodeTransform> layoutResult, float groundLevel, float streetHeight)
+        public override void ToLayout(Dictionary<ILayoutNode, NodeTransform> layoutResult, float groundLevel, float streetHeight)
         {
             layoutResult[GraphNode]
                 = new NodeTransform(new Vector3(street.Center.X, groundLevel, street.Center.Y),
@@ -583,7 +582,7 @@ namespace SEE.Layout.NodeLayouts.EvoStreets
                                     0);
             foreach (ENode child in children)
             {
-                child.ToLayout(ref layoutResult, groundLevel, streetHeight);
+                child.ToLayout(layoutResult, groundLevel, streetHeight);
             }
         }
     }
