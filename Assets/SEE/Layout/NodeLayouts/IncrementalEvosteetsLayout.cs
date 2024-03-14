@@ -121,16 +121,11 @@ namespace SEE.Layout.NodeLayouts
             if (!layoutNodesList.Any())
             {
                 throw new ArgumentException("No nodes to be laid out.");
-            }
-            //List<Node> nodes = layoutNodes.Select(n => nodeMap[n.ID]).ToList();
-            //// check if the old layout can be used to lay out siblings.
-
-
-            IncrementalEvostreets.Rectangle rectangle = new IncrementalEvostreets.Rectangle(x: -width / 2.0f, z: -depth / 2.0f, width, depth);
+            }            
          
             if (oldLayout == null)
-
             {
+                IncrementalEvostreets.Rectangle rectangle = new IncrementalEvostreets.Rectangle(x: -width / 2.0f, z: -depth / 2.0f, width, depth);
                 this.Roots = LayoutNodes.GetRoots(layoutNodesList);
                 InitNodes();
                 LayoutDescriptor treeDescriptor;
@@ -250,208 +245,6 @@ namespace SEE.Layout.NodeLayouts
         }
 
         /// <summary>
-        /// Calculates the layout for <paramref name="siblings"/> so that they fit in <paramref name="rectangle"/>.
-        /// Works recursively on the children of each sibling.
-        /// Adds the actual layout to <see cref="layoutResult"/>
-        /// </summary>
-        /// <param name="siblings">nodes with same parent (or roots)</param>
-        /// <param name="rectangle">area to place siblings</param>
-        private void CalculateLayout(ICollection<ILayoutNode> siblings, IncrementalEvostreets.Rectangle rectangle) //
-        {
-          
-            List<Node> nodes = siblings.Select(n => nodeMap[n.ID]).ToList();
-            // check if the old layout can be used to lay out siblings.
-            if (oldLayout == null
-                || NumberOfOccurrencesInOldGraph(nodes) <= 4
-                || ParentsInOldGraph(nodes).Count != 1)
-            {
-                // Dissect.Apply(nodes, rectangle);
-           
-
-            }
-            else
-            {
-     
-
-                  ApplyIncrementalLayout(nodes, rectangle);
-            }
-
-            AddToLayout(nodes);
-
-            //foreach (ILayoutNode node in siblings)
-            //{
-            //    ICollection<ILayoutNode> children = node.Children();
-            //    if (children.Count <= 0)
-            //    {
-            //        continue;
-            //    }
-
-            //    //EvoStreets.Rectangle childRectangle = nodeMap[node.ID].Rectangle;
-            //    //CalculateLayout(children, childRectangle);
-            //}
-        }
-
-        // <summary>
-        // Calculates a stable layout for <paramref name = "nodes" />.
-        // </ summary >
-        // < param name="nodes">nodes to be laid out</param>
-        // <param name = "rectangle" > rectangle in which the nodes should be laid out</param>
-        private void ApplyIncrementalLayout(List<Node> nodes, IncrementalEvostreets.Rectangle rectangle)
-        {
-            // oldNodes are not only the siblings that are in the old graph and in the new one,
-            // but all siblings in old graph. Note that there is exactly one single parent (because of the if-clause),
-            // but this parent can be null if children == roots
-            ILayoutNode oldILayoutParent = ParentsInOldGraph(nodes).First();
-            ICollection<ILayoutNode> oldILayoutSiblings =
-                oldILayoutParent == null ? oldLayout.Roots : oldILayoutParent.Children();
-            List<Node> oldNodes = oldILayoutSiblings.Select(n => oldLayout.nodeMap[n.ID]).ToList();
-
-            SetupNodeLists(nodes, oldNodes,
-                out List<Node> workWith,
-                out List<Node> nodesToBeDeleted,
-                out List<Node> nodesToBeAdded);
-
-          IncrementalEvostreets.Rectangle oldRectangle = IncrementalEvostreets.Utils.CreateParentRectangle(oldNodes);
-            IncrementalEvostreets.Utils.TransformRectangles(workWith,
-                oldRectangle: oldRectangle,
-                newRectangle: rectangle);
-
-            foreach (Node obsoleteNode in nodesToBeDeleted)
-            {
-                LocalMoves.DeleteNode(obsoleteNode);
-                workWith.Remove(obsoleteNode);
-            }
-
-            CorrectAreas.Correct(workWith, settings);
-            foreach (Node nodeToBeAdded in nodesToBeAdded)
-            {
-                LocalMoves.AddNode(workWith, nodeToBeAdded);
-                workWith.Add(nodeToBeAdded);
-            }
-
-            CorrectAreas.Correct(workWith, settings);
-
-            LocalMoves.LocalMovesSearch(workWith, settings);
-        }
-
-        /// <summary>
-        /// Calculates 3 lists of <see cref="Node"/>s to transform stepwise the old layout
-        /// to a new one.
-        /// </summary>
-        /// <param name="nodes">siblings from the current layout</param>
-        /// <param name="oldNodes">corresponding siblings from the old layout</param>
-        /// <param name="workWith">a copy of the old layout with nodes from the new one</param>
-        /// <param name="nodesToBeDeleted">artificial nodes with no equivalent ILayoutNode, part of workWith</param>
-        /// <param name="nodesToBeAdded">nodes that are not in workWith, but in nodes</param>
-        private static void SetupNodeLists(
-            List<Node> nodes,
-            List<Node> oldNodes,
-            out List<Node> workWith,
-            out List<Node> nodesToBeDeleted,
-            out List<Node> nodesToBeAdded)
-        {
-            //  [         oldNodes            ]--------------   <- nodes of OLD layout
-            //  --------------[              nodes          ]   <- nodes of new layout
-            //  [ toBeDeleted ]---------------[  toBeAdded  ]   <- nodes of new layout
-            //  [         workWith            ]--------------   <- nodes of new layout
-            //                                                     designed to be changed over time to nodes
-
-            // get nodes from old layout and copy their rectangles
-            // setup workWith and nodesToBeDeleted
-            workWith = new List<Node>();
-            nodesToBeDeleted = new List<Node>();
-            foreach (Node oldNode in oldNodes)
-            {
-                Node newNode = nodes.Find(x => x.ID.Equals(oldNode.ID));
-                if (newNode == null)
-                {
-                    // create an artificial node that has no corresponding ILayoutNode in this layout.
-                    // they are designed to be deleted but it's necessary to copy the layout of oldNodes.
-                    newNode = new Node(oldNode.ID);
-                    nodesToBeDeleted.Add(newNode);
-                }
-
-                workWith.Add(newNode);
-                newNode.Rectangle = oldNode.Rectangle.Clone();
-            }
-
-            IncrementalEvostreets.Utils.CloneSegments(
-                from: oldNodes,
-                to: workWith.ToDictionary(n => n.ID, n => n));
-
-            List<Node> workWithAlias = workWith;
-            nodesToBeAdded = nodes.Where(n => !workWithAlias.Contains(n)).ToList();
-        }
-
-        /// <summary>
-        /// Returns a collection of all nodes of <see cref="oldLayout"/> that are parent to a node
-        /// with the same id as a node in <paramref name="nodes"/>. The result will contain null
-        /// if there is a root in the old layout with an equivalent node in <paramref name="nodes"/>
-        /// </summary>
-        /// <param name="nodes">nodes in this graph</param>
-        /// <returns>Collection of parent nodes from <see cref="oldLayout"/>.</returns>
-        private ICollection<ILayoutNode> ParentsInOldGraph(IEnumerable<Node> nodes)
-        {
-            Assert.IsNotNull(oldLayout);
-            HashSet<ILayoutNode> parents = new();
-            foreach (Node node in nodes)
-            {
-                if (oldLayout.iLayoutNodeMap.TryGetValue(node.ID, out ILayoutNode oldNode))
-                {
-                    parents.Add(oldNode.Parent);
-                }
-            }
-
-            return parents;
-        }
-
-        /// <summary>
-        /// The number of nodes that are also present in <see cref="oldLayout"/>.
-        /// </summary>
-        /// <param name="nodes">the nodes to look up</param>
-        /// <returns>The number of occurrences in the last graph.</returns>
-        private int NumberOfOccurrencesInOldGraph(IEnumerable<Node> nodes)
-        {
-            Assert.IsNotNull(oldLayout);
-            return nodes.Count(n => oldLayout.iLayoutNodeMap.ContainsKey(n.ID));
-        }
-
-        /// <summary>
-        /// Adds the result of the layout calculation to <see cref="layoutResult"/>.
-        /// Applies padding to the result.
-        /// </summary>
-        /// <param name="nodes">nodes with calculated layout</param>
-        private void AddToLayout(IEnumerable<Node> nodes)
-        {
-            foreach (Node node in nodes)
-            {
-                float absolutePadding = settings.PaddingMm / 1000;
-                IncrementalEvostreets.Rectangle rectangle = node.Rectangle;
-
-                ILayoutNode layoutNode = iLayoutNodeMap[node.ID];
-
-                if (rectangle.Width - absolutePadding <= 0 ||
-                    rectangle.Depth - absolutePadding <= 0)
-                {
-                    absolutePadding = 0;
-                }
-
-                Vector3 position = new Vector3(
-                    (float)(rectangle.X + rectangle.Width / 2.0d),
-                    GroundLevel,
-                    (float)(rectangle.Z + rectangle.Depth / 2.0d));
-                Vector3 scale = new Vector3(
-                    (float)(rectangle.Width - absolutePadding),
-                    layoutNode.LocalScale.y,
-                    (float)(rectangle.Depth - absolutePadding));
-
-
-
-                layoutResult[layoutNode] = new NodeTransform(position, scale);
-            }
-        }
-
-        /// <summary>
         /// Returns the width of the street for the root as a percentage <see cref="streetWidthPercentage"/>
         /// of the average of all widths and depths of leaf nodes in <paramref name="layoutNodes"/>.
         /// </summary>
@@ -476,8 +269,8 @@ namespace SEE.Layout.NodeLayouts
         }
 
         public override Dictionary<ILayoutNode, NodeTransform> Layout
-        (ICollection<ILayoutNode> layoutNodes, ICollection<Edge> edges,
-            ICollection<SublayoutLayoutNode> sublayouts)
+            (ICollection<ILayoutNode> layoutNodes, ICollection<Edge> edges,
+             ICollection<SublayoutLayoutNode> sublayouts)
         {
             // Must not be implemented because UsesEdgesAndSublayoutNodes() returns false
             // and this method should never be called.
@@ -488,6 +281,5 @@ namespace SEE.Layout.NodeLayouts
         {
             return false;
         }
-
     }
 }
