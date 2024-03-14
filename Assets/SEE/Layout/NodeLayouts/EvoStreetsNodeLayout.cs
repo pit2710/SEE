@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace SEE.Layout.NodeLayouts
 {
+    /// <summary>
+    /// Implements the EvoStreets layout algorithm.
+    /// </summary>
     public class EvoStreetsNodeLayout : HierarchicalNodeLayout
     {
         /// <summary>
