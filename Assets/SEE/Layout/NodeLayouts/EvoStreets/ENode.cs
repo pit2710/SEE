@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Antlr4.Runtime.Tree;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -309,8 +310,7 @@ namespace SEE.Layout.NodeLayouts.EvoStreets
         public override void ToLayout(ref Dictionary<ILayoutNode, NodeTransform> layoutResult, float groundLevel, float streetHeight)
         {
             layoutResult[GraphNode] = new NodeTransform(new Vector3(Rectangle.Center.X, groundLevel, Rectangle.Center.Y),
-                                                         new Vector3 (Rectangle.Width, GraphNode.AbsoluteScale.y, Rectangle.Depth),
-                                                         0);
+                                                         new Vector3 (Rectangle.Width, GraphNode.AbsoluteScale.y, Rectangle.Depth),                                       0);
         }
     }
 
@@ -418,8 +418,10 @@ namespace SEE.Layout.NodeLayouts.EvoStreets
             // Now put the children along the street.
             float leftOffset = treeDescriptor.OffsetBetweenBuildings;
             float rightOffset = treeDescriptor.OffsetBetweenBuildings;
-
-            foreach (ENode child in children)
+            // Sort by Size of rectangle
+            //For Linear Layout
+            // here i need to create Linear / Grid / Shortest Distance
+            foreach (ENode child in children.OrderByDescending(p=> (p.Rectangle.Width * p.Rectangle.Depth)))
             {
                 child.Left = leftOffset <= rightOffset;
                 if (child.Left)
@@ -548,8 +550,11 @@ namespace SEE.Layout.NodeLayouts.EvoStreets
             Location origin = MoveTo(street.Center, Length(orientation) / 2, Invert(orientation));
 
             float streetExtent = (horizontal ? street.Depth : street.Width) / 2;
+
+
             foreach (ENode child in children)
             {
+               // Debug.LogWarning((child.Rectangle.Width* child.Rectangle.Depth).ToString());
                 Orientation childOrientation = child.Rotate(orientation);
                 // Move child parallel to the street.
                 Location childCenter = MoveTo(origin, child.DistanceFromOrigin, orientation);
