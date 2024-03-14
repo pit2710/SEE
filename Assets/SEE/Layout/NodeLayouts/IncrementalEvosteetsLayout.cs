@@ -10,12 +10,6 @@ using UnityEngine.Assertions;
 using Node = SEE.Layout.NodeLayouts.IncrementalEvostreets.Node;
 using SEE.Layout.NodeLayouts.EvoStreets;
 
-using System.ComponentModel;
-using static RootMotion.FinalIK.GrounderQuadruped;
-using Crosstales;
-using Dissonance;
-
-
 namespace SEE.Layout.NodeLayouts
 {
     public class IncrementalEvostreetsLayout : HierarchicalNodeLayout, IIncrementalNodeLayout
@@ -36,8 +30,7 @@ namespace SEE.Layout.NodeLayouts
             Name = "IncrementalEvostreets";
             this.width = width;
             this.depth = depth;
-            this.settings = settings;
-      
+            this.settings = settings;      
         }
 
         static int layoutLevel = -1;
@@ -61,8 +54,6 @@ namespace SEE.Layout.NodeLayouts
         /// </summary>
         private readonly float streetHeight = 0.0001f;
 
-
-
         /// <summary>
         /// The adjustable parameters for the layout.
         /// </summary>
@@ -79,9 +70,11 @@ namespace SEE.Layout.NodeLayouts
         private readonly float depth;
 
         /// <summary>
-        /// The node layout we compute as a result.
+        /// The layout computed by this layouter. It needs to be kept for the next layout.
+        /// If the there is no old layout, it can be null.
         /// </summary>
-        private  Dictionary<ILayoutNode, NodeTransform> layoutResult = new(); //removed readonly
+        private readonly Dictionary<ILayoutNode, NodeTransform> layoutResult = new();
+
         /// <summary>
         /// A map to find a node (fast) by its ID
         /// </summary>
@@ -113,7 +106,7 @@ namespace SEE.Layout.NodeLayouts
                 else
                 {
                     throw new ArgumentException(
-                        "Predecessor of IncrementalEvosteetsLayout was not a IncrementalEvosteetsLayout.");
+                        "Predecessor of IncrementalEvosteetsLayout was not an IncrementalEvosteetsLayout.");
                 }
             }
         }
@@ -136,13 +129,10 @@ namespace SEE.Layout.NodeLayouts
             IncrementalEvostreets.Rectangle rectangle = new IncrementalEvostreets.Rectangle(x: -width / 2.0f, z: -depth / 2.0f, width, depth);
          
             if (oldLayout == null)
-            // || NumberOfOccurrencesInOldGraph(nodes) <= 4
-            //|| ParentsInOldGraph(nodes).Count != 1)
-            {
 
+            {
                 this.Roots = LayoutNodes.GetRoots(layoutNodesList);
                 InitNodes();
-                UnityEngine.Debug.LogWarning($"Create new Layout{layoutLevel}");
                 LayoutDescriptor treeDescriptor;
                 treeDescriptor.StreetWidth = CalculateStreetWidth(layoutNodes.ToList());
                 treeDescriptor.OffsetBetweenBuildings = treeDescriptor.StreetWidth * offsetBetweenBuildingsPercentage;
@@ -152,68 +142,46 @@ namespace SEE.Layout.NodeLayouts
                 treeDescriptor.StreetWidth = CalculateStreetWidth(layoutNodes.ToList());
                 rootNode.SetSize(Orientation.East, treeDescriptor);
                 rootNode.SetLocation(Orientation.East, new Location(0, 0));
-
-                Dictionary<ILayoutNode, NodeTransform> layoutResult = new Dictionary<ILayoutNode, NodeTransform>();
-                rootNode.ToLayout(ref layoutResult, GroundLevel + (float)(20 * layoutLevel), streetHeight);
-
-                UnityEngine.Debug.Log("Erstes Layout Results");
+                               
+                rootNode.ToLayout(layoutResult, GroundLevel + (float)(20 * layoutLevel), streetHeight);
 
                 foreach (KeyValuePair<ILayoutNode, NodeTransform> keyValuePair in layoutResult)
                 {
-                    UnityEngine.Debug.Log($"{keyValuePair.Key},{keyValuePair.Value}");
+                    UnityEngine.Debug.Log($"Initial: {keyValuePair.Key},{keyValuePair.Value}\n");
                 }
             }
             else
             {
-
-
-                //oldNodes are not only the siblings that are in the old graph and in the new one,
-                //but all siblings in old graph.Note that there is exactly one single parent (because of the if-clause),
-                //but this parent can be null if children == roots
-
-                //    List<Node> nodes = layoutNodes.Select(n => nodeMap[n.ID]).ToList();
-                //ILayoutNode oldILayoutParent = ParentsInOldGraph(nodes).First();
-                //ICollection<ILayoutNode> oldILayoutSiblings =
-                //    oldILayoutParent == null ? oldLayout.Roots : oldILayoutParent.Children();
-                //List<Node> oldNodes = oldILayoutSiblings.Select(n => oldLayout.nodeMap[n.ID]).ToList();
-                //// Node List use to create the new layout from the preveus ones
-                //SetupNodeLists(nodes, oldNodes,
-                //    out List<Node> workWith,
-                //    out List<Node> nodesToBeDeleted,
-                //    out List<Node> nodesToBeAdded);
-                ////  Dictionary<ILayoutNode, NodeTransform> layoutResult = new Dictionary<ILayoutNode, NodeTransform>();
-
-
-                UnityEngine.Debug.Log("Zweite. Layout Results");
-                foreach (KeyValuePair<ILayoutNode, NodeTransform> keyValuePair in oldLayout.layoutResult)
+                // Note: The ILayoutNodes in input parameter layoutNodes are not the same as the ILayoutNodes
+                // in oldLayout.layoutResult. We will get always fresh ILayoutNodes in each call to this
+                // method.
+                foreach (ILayoutNode newerNode in layoutNodes)
                 {
-                    UnityEngine.Debug.Log($"{keyValuePair.Key},{keyValuePair.Value}");
+                    // Check whether the node is in the old layout. We can do that based on the ID.
+                    // FIXME: This is a very inefficient way to find the node in the old layout.
+                    // Every such lookup is O(n) in the number of nodes in the old layout.
+                    ILayoutNode olderNode = oldLayout.layoutResult.Keys.FirstOrDefault(l => l.ID == newerNode.ID);
+                    if (olderNode != null)
+                    {
+                        // An older node existed in the old layout, so we can re-use its position and scale.
+                        // FIXME: We cannot use olderNode.AbsoluteScale, because newNodes has a different scale.
+                        layoutResult[newerNode] = new NodeTransform(olderNode.CenterPosition, olderNode.AbsoluteScale);
+                    }
+                    else
+                    {
+                        // If the node is not in the old layout, create a new layout for it.
+                        // FIXME: We need to find a suitable position and scale for the new node based on the
+                        // old layout.
+                        Debug.LogWarning($"Node {newerNode.ID} not found in the old layout. We just place it in the center.");
+                        // FIXME: We are using layoutLevel for the y-coordinate. This is used only to let the
+                        // new nodes stick out. This must be fixed.
+                        layoutResult[newerNode] = new NodeTransform(new Vector3(0, layoutLevel, 0), newerNode.LocalScale);
+                    }                    
                 }
-                UnityEngine.Debug.Log("calculate Layout from old Layout");
-                layoutResult.Clear();
-               //layoutResult = new Dictionary<ILayoutNode, NodeTransform>(oldLayout.layoutResult);
-               
-                //  Dictionary<ILayoutNode, NodeTransform> layoutResult = new Dictionary<ILayoutNode, NodeTransform>();
-                foreach (KeyValuePair<ILayoutNode, NodeTransform> keyValuePair in oldLayout.layoutResult)
-                {
-                    UnityEngine.Debug.LogWarning($"{keyValuePair.Key},{keyValuePair.Value}\n");
-                    layoutResult.Add(keyValuePair.Key, new NodeTransform(keyValuePair.Value.Position, keyValuePair.Value.Scale) );
-                }
-                //layoutResult.Add()
-
-                //  CalculateLayout(Roots, rectangle);
+                // FIXME: We do not handle deleted nodes. The loop above only handles new and existing nodes.
             }
-
-            //}
-            //else
-            //{
-
-
-            //}
-
             return layoutResult;
         }
-
 
         /// <summary>
         /// Creates the ENode tree hierarchy starting at given root node. The root has
