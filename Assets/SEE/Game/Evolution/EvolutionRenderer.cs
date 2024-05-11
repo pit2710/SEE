@@ -32,6 +32,7 @@ using UnityEngine.Assertions;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 using SEE.Game.CityRendering;
+using SEE.UI;
 
 namespace SEE.Game.Evolution
 {
@@ -99,6 +100,11 @@ namespace SEE.Game.Evolution
         /// city.
         /// </summary>
         private const float skyLevel = 2.0f;
+
+        /// <summary>
+        /// The message to be displayed while rendering the evolution city.
+        /// </summary>
+        private string LoadingMessage => $"Rendering evolution city {gameObject.name}...";
 
         /// <summary>
         /// The manager of the game objects created for the city.
@@ -242,9 +248,9 @@ namespace SEE.Game.Evolution
         /// <summary>
         /// Informs the user about an error when attempting to load a layout.
         /// </summary>
-        private static Notification UserInfoNoLayout()
+        private static void UserInfoNoLayout()
         {
-            return ShowNotification.Error(notificationTitle, "Could not retrieve a layout for the graph.");
+            ShowNotification.Error(notificationTitle, "Could not retrieve a layout for the graph.");
         }
 
         #endregion
@@ -271,11 +277,7 @@ namespace SEE.Game.Evolution
                 edgesAreDrawn = Renderer.AreEdgesDrawn();
 
                 objectManager = new ObjectManager(Renderer, gameObject);
-                markerFactory = new MarkerFactory(markerWidth: cityEvolution.MarkerWidth,
-                                    markerHeight: cityEvolution.MarkerHeight,
-                                    additionColor: cityEvolution.AdditionBeamColor,
-                                    changeColor: cityEvolution.ChangeBeamColor,
-                                    deletionColor: cityEvolution.DeletionBeamColor);
+                markerFactory = new MarkerFactory(cityEvolution.MarkerAttributes);
                 animationWatchDog = new CountingJoin();
             }
             else
@@ -349,6 +351,10 @@ namespace SEE.Game.Evolution
             currentCity = null;
             nextCity = null;
 
+            if (graphs.Count > 0)
+            {
+                LoadingSpinner.ShowIndeterminate(LoadingMessage);
+            }
             CalculateAllGraphLayouts(graphs);
 
             shownGraphHasChangedEvent.Invoke();
@@ -606,8 +612,8 @@ namespace SEE.Game.Evolution
             MarkNodes();
             UpdateNodeChangeBuffer();
             UpdateGameNodeHierarchy();
-            RenderPlane();
 
+            LoadingSpinner.Hide(LoadingMessage);
             IsStillAnimating = false;
             animationFinishedEvent.Invoke();
 
@@ -716,22 +722,6 @@ namespace SEE.Game.Evolution
                 foreach (Node node in changedNodes)
                 {
                     markerFactory.MarkChanged(GraphElementIDMap.Find(node.ID, true));
-                }
-            }
-
-            /// <summary>
-            /// Renders a plane enclosing all game objects of the currently shown graph.
-            /// </summary>
-            void RenderPlane()
-            {
-                bool isPlaneNew = !objectManager.GetPlane(out GameObject plane);
-                if (!isPlaneNew)
-                {
-                    // We are re-using the existing plane, hence, we animate its change
-                    // (new position and new scale).
-                    objectManager.GetPlaneTransform(out Vector3 centerPosition, out Vector3 scale);
-                    Tweens.Scale(plane, scale, AnimationLagFactor);
-                    Tweens.Move(plane, centerPosition, AnimationLagFactor / 2);
                 }
             }
         }

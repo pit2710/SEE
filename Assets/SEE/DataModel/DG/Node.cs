@@ -53,30 +53,12 @@ namespace SEE.DataModel.DG
         public const string SourceNameAttribute = "Source.Name";
 
         /// <summary>
-        /// The attribute name for the filename of nodes. The filename may not exist.
-        /// </summary>
-        public const string SourceFileAttribute = "Source.File";
-
-        /// <summary>
         /// The name of the node (which is not necessarily unique).
         /// </summary>
         public string SourceName
         {
             get => TryGetString(SourceNameAttribute, out string sourceName) ? sourceName : null;
             set => SetString(SourceNameAttribute, value);
-        }
-
-        /// <summary>
-        /// The filename of the node. May not exist, in which case this will be null.
-        /// </summary>
-        public string SourceFile
-        {
-            get
-            {
-                TryGetString(SourceFileAttribute, out string file);
-                return file;
-            }
-            set => SetString(SourceFileAttribute, value);
         }
 
         /// <summary>
@@ -434,10 +416,10 @@ namespace SEE.DataModel.DG
         }
 
         /// <summary>
-        /// The descendants of the node.
+        /// The immediate descendants of the node.
         /// Note: This is not a copy. The result can't be modified.
         /// </summary>
-        /// <returns>descendants of the node</returns>
+        /// <returns>immediate descendants of the node</returns>
         public IList<Node> Children()
         {
             return children.AsReadOnly();

@@ -5,6 +5,7 @@ using SEE.Utils;
 using System.Collections.Generic;
 using SEE.DataModel;
 using SEE.DataModel.DG;
+using SEE.UI;
 using UnityEngine;
 
 namespace SEE.Game.City
@@ -33,7 +34,7 @@ namespace SEE.Game.City
         /// <see cref="Update"/> is called). The default value is 5, which
         /// turned out to be a good compromise between load and speed.
         /// </summary>
-        [SerializeField, Min(1)]
+        [Min(1)]
         public int EdgesPerFrame = 5;
 
         /// <summary>
@@ -58,9 +59,19 @@ namespace SEE.Game.City
         private bool initialEdgesDone;
 
         /// <summary>
+        /// The text that shall be shown in the loading spinner while the initial edges are being processed.
+        /// </summary>
+        private string LoadingText => $"Creating edge meshes for {gameObject.name}...";
+
+        /// <summary>
         /// Event that is triggered once all graph edges have been processed for the first time.
         /// </summary>
         public event Action OnInitialEdgesDone;
+
+        /// <summary>
+        /// Takes the number of remaining initial edges to be processed and updates the loading spinner accordingly.
+        /// </summary>
+        private Action<int> UpdateInitialEdgesProgress;
 
         /// <summary>
         /// Initialize this component with given settings.
@@ -82,6 +93,9 @@ namespace SEE.Game.City
 
             // When we're initialized, we also convert all existing edges into meshes first.
             graph.Edges().ForEach(edges.Enqueue);
+            LoadingSpinner.ShowDeterminate(LoadingText, out Action<float> updateProgress);
+            int totalEdges = edges.Count;
+            UpdateInitialEdgesProgress = remaining => updateProgress(1 - remaining / (float)totalEdges);
         }
 
         /// <summary>
@@ -100,7 +114,6 @@ namespace SEE.Game.City
             {
                 return gameEdge;
             }
-
             return null;
         }
 
@@ -113,13 +126,21 @@ namespace SEE.Game.City
                 // We're done with the initial edges.
                 initialEdgesDone = true;
                 OnInitialEdgesDone?.Invoke();
+                LoadingSpinner.Hide(LoadingText);
+                UpdateInitialEdgesProgress = null;
             }
             // We will loop until either we converted `EdgesPerFrame` many edges,
             // or until there are no further edges to convert to meshes.
             int remaining = Mathf.Min(edges.Count, EdgesPerFrame);
             for (int i = 0; i < remaining; i++)
             {
+                UpdateInitialEdgesProgress?.Invoke(edges.Count);
                 Edge edge = edges.Dequeue();
+                if (edge == null)
+                {
+                    Debug.LogWarning("Edge is null. Ignoring.\n");
+                    continue;
+                }
                 GameObject gameEdge = GetGameEdge(edge);
                 if (gameEdge == null)
                 {
@@ -130,7 +151,7 @@ namespace SEE.Game.City
                 // fail-safe
                 if (!gameEdge.TryGetComponent(out SEESpline spline))
                 {
-                    Debug.LogWarning("Game object without SEESpline component. Ignoring.\n");
+                    Debug.LogWarning($"Game object without {nameof(SEESpline)} component. Ignoring.\n");
                     continue;
                 }
 
@@ -174,6 +195,7 @@ namespace SEE.Game.City
             if (value is EdgeEvent { Change: ChangeType.Addition } edgeEvent)
             {
                 // If this is an added edge, we are going to need to turn it into a mesh.
+                LoadingSpinner.ShowIndeterminate(LoadingText);
                 edges.Enqueue(edgeEvent.Edge);
             }
 

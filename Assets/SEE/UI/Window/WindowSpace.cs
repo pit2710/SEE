@@ -88,20 +88,15 @@ namespace SEE.UI.Window
         /// Closes a previously opened window.
         /// </summary>
         /// <param name="window">The window which should be closed.</param>
-        /// <exception cref="ArgumentException">If the given <paramref name="window"/> is already closed.</exception>
         /// <exception cref="ArgumentNullException">If the given <paramref name="window"/> is <c>null</c>.</exception>
-        public void CloseWindow(BaseWindow window)
+        /// <returns><c>true</c> if the window was closed, <c>false</c> otherwise.</returns>
+        public bool CloseWindow(BaseWindow window)
         {
-            if (window == null)
+            if (ReferenceEquals(window, null))
             {
                 throw new ArgumentNullException(nameof(window));
             }
-            else if (!windows.Contains(window))
-            {
-                throw new ArgumentException("Given window is already closed.");
-            }
-
-            windows.Remove(window);
+            return windows.Remove(window);
         }
 
         /// <summary>

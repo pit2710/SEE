@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SEE.DataModel.DG.GraphSearch;
 
 namespace SEE.DataModel.DG
 {
     /// <summary>
-    /// Provides extensions to <see cref="Graph"/>.
+    /// Provides extensions to <see cref="Graph"/> and related classes.
     /// </summary>
     public static class GraphExtensions
     {
@@ -23,8 +24,10 @@ namespace SEE.DataModel.DG
         /// <param name="comparer">yields true if two graph elements are to be considered identical</param>
         /// <param name="added">the nodes that are only in <paramref name="newGraph"/></param>
         /// <param name="removed">the nodes that are only in <paramref name="oldGraph"/></param>
-        /// <param name="changed">the elements in both graphs that have differences according to <paramref name="diff"/></param>
-        /// <param name="equal">the elements in both graphs that have no differences according to <paramref name="diff"/></param>
+        /// <param name="changed">the elements in both graphs that have differences according
+        /// to <paramref name="diff"/>; it belongs to <paramref name="newGraph"/></param>
+        /// <param name="equal">the elements in both graphs that have no differences according
+        /// to <paramref name="diff"/>; it belongs to <paramref name="newGraph"/></param>
         public static void Diff<T>
            (this Graph newGraph,
             Graph oldGraph,
@@ -88,6 +91,7 @@ namespace SEE.DataModel.DG
 
                 foreach (T sharedFromOldGraph in sharedElements)
                 {
+                    // sharedFromNewGraph is in newGraph and corresponds to sharedFromOldGraph
                     T sharedFromNewGraph = getElement(newGraph, sharedFromOldGraph.ID);
                     if (diff.AreDifferent(sharedFromOldGraph, sharedFromNewGraph))
                     {
@@ -124,6 +128,19 @@ namespace SEE.DataModel.DG
                 }
             });
             return new AttributeDiff(floatAttributes, intAttributes, stringAttributes, toggleAttributes);
+        }
+
+        /// <summary>
+        /// Applies all <paramref name="modifiers"/> to the given <paramref name="elements"/>.
+        /// </summary>
+        /// <param name="modifiers">graph modifiers to apply to the graph elements</param>
+        /// <param name="elements">the graph elements to modify</param>
+        /// <typeparam name="T">the type of the graph elements</typeparam>
+        /// <returns>the modified graph elements</returns>
+        public static IEnumerable<T> ApplyAll<T>(this IEnumerable<IGraphModifier> modifiers, IEnumerable<T> elements)
+            where T : GraphElement
+        {
+            return modifiers.Aggregate(elements, (current, modifier) => modifier.Apply(current));
         }
     }
 }

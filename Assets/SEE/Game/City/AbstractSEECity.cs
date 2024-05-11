@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Sirenix.Serialization;
 using SEE.DataModel.DG;
-using SEE.DataModel.DG.IO;
 using SEE.GO;
 using SEE.Layout.NodeLayouts.Cose;
 using SEE.Tools;
@@ -16,6 +14,7 @@ using SEE.UI.RuntimeConfigMenu;
 using SEE.Game.CityRendering;
 using SEE.Utils.Config;
 using SEE.Utils.Paths;
+using UnityEngine.Rendering;
 
 namespace SEE.Game.City
 {
@@ -31,7 +30,7 @@ namespace SEE.Game.City
     {
         protected virtual void Awake()
         {
-            // Intentionally left blank
+            LabelLineMaterial = new Material(LineMaterial(Color.white));
         }
 
         protected virtual void Start()
@@ -70,7 +69,7 @@ namespace SEE.Game.City
         /// <summary>
         /// The path where the settings (the attributes of this class) are stored.
         /// </summary>
-        [SerializeField, Tooltip("Path of configuration file."), TabGroup(DataFoldoutGroup), RuntimeTab(DataFoldoutGroup)]
+        [Tooltip("Path of configuration file."), TabGroup(DataFoldoutGroup), RuntimeTab(DataFoldoutGroup)]
         public FilePath ConfigurationPath = new();
 
         /// <summary>
@@ -84,7 +83,7 @@ namespace SEE.Game.City
         /// The path to project where the source code can be found. This attribute
         /// is needed to show the source code of nodes and edges.
         /// </summary>
-        [SerializeField, TabGroup(DataFoldoutGroup), RuntimeTab(DataFoldoutGroup)]
+        [TabGroup(DataFoldoutGroup), RuntimeTab(DataFoldoutGroup), ShowInInspector]
         [PropertyTooltip("Directory where the source code is located")]
         [HideReferenceObjectPicker]
         public DirectoryPath SourceCodeDirectory
@@ -111,7 +110,7 @@ namespace SEE.Game.City
         /// of an IDE for a particular project. Concretely, if the IDE is Visual Studio,
         /// this is the VS solution file.
         /// </summary>
-        [SerializeField, Tooltip("Path of VS solution file."), TabGroup(DataFoldoutGroup), RuntimeTab(DataFoldoutGroup)]
+        [Tooltip("Path of Visual Studio solution file."), TabGroup(DataFoldoutGroup), RuntimeTab(DataFoldoutGroup)]
         public FilePath SolutionPath = new();
 
         /// <summary>
@@ -125,8 +124,17 @@ namespace SEE.Game.City
         /// they should be visualized or not and if so, how.
         /// </summary>
         [NonSerialized, OdinSerialize, Tooltip("Visual attributes of nodes."), HideReferenceObjectPicker]
-        [DictionaryDrawerSettings(KeyLabel = "Node type", ValueLabel = "Visual attributes", DisplayMode = DictionaryDisplayOptions.CollapsedFoldout), TabGroup(NodeFoldoutGroup), RuntimeTab(NodeFoldoutGroup)]
+        [DictionaryDrawerSettings(KeyLabel = "Node type", ValueLabel = "Visual attributes",
+            DisplayMode = DictionaryDisplayOptions.CollapsedFoldout), TabGroup(NodeFoldoutGroup), RuntimeTab(NodeFoldoutGroup)]
         public NodeTypeVisualsMap NodeTypes = new();
+
+        /// <summary>
+        /// Attributes to mark changes of nodes.
+        /// </summary>
+        [Tooltip("How changes of nodes should be marked."),
+            TabGroup(NodeFoldoutGroup), RuntimeTab(NodeFoldoutGroup), HideReferenceObjectPicker]
+        [NonSerialized, OdinSerialize]
+        public MarkerAttributes MarkerAttributes = new();
 
         /// <summary>
         /// If true, lifted edges whose source and target nodes are the same are ignored.
@@ -160,6 +168,38 @@ namespace SEE.Game.City
         [Tooltip("Maps metric names onto colors."), TabGroup(MetricFoldoutGroup), RuntimeTab(MetricFoldoutGroup), HideReferenceObjectPicker]
         [NonSerialized, OdinSerialize]
         public ColorMap MetricToColor = new();
+
+        /// <summary>
+        /// A progress bar, shown in the editor.
+        /// Can be used to indicate loading progress during city creation.
+        /// </summary>
+        [ProgressBar(0, 1, Height = 20, ColorGetter = nameof(GetProgressBarColor),
+                     CustomValueStringGetter = "$" + nameof(ProgressBarValueString))]
+        [PropertyOrder(999)]
+        [ShowIf(nameof(ShowProgressBar))]
+        [HideLabel]
+        [ReadOnly]
+        public float ProgressBar;
+
+        /// <summary>
+        /// Whether the progress bar should be shown.
+        /// </summary>
+        private bool ShowProgressBar => ProgressBar > 0;
+
+        /// <summary>
+        /// The string representation of the progress bar value.
+        /// </summary>
+        private string ProgressBarValueString => $"{ProgressBar * 100:F0}%";
+
+        /// <summary>
+        /// Returns the color for the progress bar, based on the current <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value (from 0–1) for which to determine the color.</param>
+        /// <returns>The color for the progress bar.</returns>
+        private static Color GetProgressBarColor(float value)
+        {
+            return Color.Lerp(Color.red, Color.green, Mathf.Pow(value, 2));
+        }
 
         /// <summary>
         /// Yields a graph renderer that can draw this city.
@@ -238,18 +278,44 @@ namespace SEE.Game.City
         [Tooltip("Settings for holistic metric boards.")]
         public BoardAttributes BoardSettings = new();
 
+        #region LabelLineMaterial
         /// <summary>
-        /// Adds all game objects tagged by <see cref="Tags.Node"/> or <see cref="Tags.Edge"/>
-        /// of <paramref name="parent"/> including its descendants to <see cref="GraphElementIDMap"/>.
+        /// The material for the line connecting a node and its label. We use exactly one material
+        /// for all connecting lines within this city, different from the lines used for labels in
+        /// other cities. This allows us to set the portal independently from other other cities.
         /// </summary>
-        /// <param name="parent">root node of the game-object tree to be added to <see cref="GraphElementIDMap"/></param>
-        protected static void UpdateGraphElementIDMap(GameObject parent)
+        [HideInInspector]
+        public Material LabelLineMaterial
+        { get; private set; }
+
+        /// <summary>
+        /// Returns the material for the line connecting a node and its label.
+        /// </summary>
+        /// <param name="lineColor">the color for the requested line material</param>
+        /// <returns>a new material for the line connecting a node and its label</returns>
+        private static Material LineMaterial(Color lineColor)
         {
-            if (parent.CompareTag(Tags.Node) || parent.CompareTag(Tags.Edge))
+            return Materials.New(Materials.ShaderType.TransparentLine, lineColor, texture: null,
+                                 renderQueueOffset: (int)(RenderQueue.Transparent + 1));
+        }
+        #endregion
+
+
+        /// <summary>
+        /// Recurses into the game-object hierarchy rooted by <paramref name="root"/> and adds
+        /// all visited game objects (including <paramref name="root"/>) tagged by <see cref="Tags.Node"/>
+        /// or <see cref="Tags.Edge"/> to <see cref="GraphElementIDMap"/>.
+        /// </summary>
+        /// <param name="root">root node of the game-object tree to be added to <see cref="GraphElementIDMap"/></param>
+        /// <remarks>Generally, <paramref name="root"/> will be a game object representing a code city;
+        /// that is, a game object where a <see cref="AbstractSEECity"/> component is attached to.</remarks>
+        protected static void UpdateGraphElementIDMap(GameObject root)
+        {
+            if (root.CompareTag(Tags.Node) || root.CompareTag(Tags.Edge))
             {
-                GraphElementIDMap.Add(parent, true);
+                GraphElementIDMap.Add(root);
             }
-            foreach (Transform child in parent.transform)
+            foreach (Transform child in root.transform)
             {
                 UpdateGraphElementIDMap(child.gameObject);
             }
@@ -322,6 +388,7 @@ namespace SEE.Game.City
         public virtual void Reset()
         {
             DeleteGraphGameObjects();
+            ProgressBar = 0;
         }
 
         /// <summary>
@@ -554,46 +621,6 @@ namespace SEE.Game.City
                           .ToDictionary(x => x.Key, x => x.Value);
 
         /// <summary>
-        /// Loads and returns the graph data from the GXL file with given <paramref name="filename"/>.
-        /// </summary>
-        /// <param name="filename">GXL filename from which to load the graph</param>
-        /// <param name="rootName">the name of the artificial root if any needs to be added;
-        /// if null is given, <paramref name="filename"/> will be used instead</param>
-        /// <returns>the loaded graph (may be empty if a graph could not be loaded)</returns>
-        protected Graph LoadGraph(string filename, string rootName = null)
-        {
-            if (string.IsNullOrEmpty(filename))
-            {
-                Debug.LogError("Empty graph path.\n");
-                Graph graph = new(SourceCodeDirectory.Path);
-                return graph;
-            }
-
-            if (File.Exists(filename))
-            {
-                Performance p = Performance.Begin("loading graph data from " + filename);
-                GraphReader graphCreator = new(filename, HierarchicalEdges,
-                                               basePath: SourceCodeDirectory.Path,
-                                               rootID: rootName ?? filename,
-                                               logger: new SEELogger());
-                graphCreator.Load();
-                Graph graph = graphCreator.GetGraph();
-                p.End();
-                Debug.Log($"Loaded graph data for city {name} from {filename} successfully:\n"
-                          + $"Number of nodes: {graph.NodeCount}\n"
-                          + $"Number of edges: {graph.EdgeCount}\n"
-                          + $"Elapsed time: {p.GetElapsedTime()} [h:m:s:ms]\n");
-                LoadDataForGraphListing(graph);
-                return graph;
-            }
-            else
-            {
-                Debug.LogError($"GXL file {filename} of city {name} does not exist.\n");
-                return new Graph(SourceCodeDirectory.Path);
-            }
-        }
-
-        /// <summary>
         /// Lists the metrics for each node type.
         /// </summary>
         [Button(ButtonSizes.Small, Name = "List Node Metrics")]
@@ -676,7 +703,8 @@ namespace SEE.Game.City
         /// Saves all data needed for the listing of the dirs in gui in cosegraphSettings
         /// </summary>
         /// <param name="graph"></param>
-        public void LoadDataForGraphListing(Graph graph)
+        [Obsolete]
+        public void SetupCompoundSpringEmbedder(Graph graph)
         {
             if (NodeLayoutSettings.Kind == NodeLayoutKind.CompoundSpringEmbedder)
             {
@@ -714,6 +742,8 @@ namespace SEE.Game.City
                                                                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.IsRelevant);
             }
         }
+
+        #region Odin Inspector Attributes
 
         //----------------------------------------------------------------
         // Odin Inspector Attributes
@@ -799,5 +829,6 @@ namespace SEE.Game.City
         /// </summary>
         protected const string ErosionFoldoutGroup = "Erosion";
 
+        #endregion
     }
 }
