@@ -81,6 +81,9 @@ namespace SEE.Game.City
             _ => throw new InvalidEnumArgumentException("Unrecognized PNormRange value.")
         };
 
+        [SerializeField]
+        [Tooltip("Set how the blocks are Sorted")]
+        private SortRange sort = SortRange.Default;
         public void Save(ConfigWriter writer, string label)
         {
             writer.BeginGroup(label);
@@ -104,6 +107,7 @@ namespace SEE.Game.City
             result |= ConfigIO.RestoreEnum(values, pNormLabel, ref pNorm);
             result |= ConfigIO.Restore(values, gradientDescentPrecisionLabel, ref GradientDescentPrecision);
             result |= ConfigIO.Restore(values, paddingLabel, ref PaddingMm);
+            result |= ConfigIO.Restore(values, sortLabel, ref sort);
             return result;
         }
 
@@ -127,8 +131,18 @@ namespace SEE.Game.City
         /// Configuration label for <see cref="PaddingMm"/>.
         /// </summary>
         private const string paddingLabel = "Padding";
+        /// <summary>
+        /// Configuration label for <see cref="sort"/>.
+        /// </summary>
+        private const string sortLabel = "Sort";
     }
 
+    public enum SortRange
+    {
+        Default,
+        ReverseMax,
+        Alphabet
+    }
 
 
 }     
